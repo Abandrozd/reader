@@ -4,8 +4,7 @@ import com.microsoft.playwright.*;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Random;
-import com.microsoft.playwright.Page;
-import com.microsoft.playwright.Locator;
+import java.util.List;
 
 public class Reader {
     private static final Random random = new Random();
@@ -23,69 +22,80 @@ public class Reader {
             // Хранилище для индексов абзацев, которые мы уже прочитали в этой главе
             Set<String> readParagraphs = new HashSet<>();
 
-            // Счетчик пустых прокруток (чтобы понять, что мы дошли до конца текста)
             int emptyScrollCount = 0;
             int maxEmptyScrolls = 3;
 
             while (true) {
-                // Собираем ВСЕ абзацы, которые сейчас физически есть в HTML-коде
-                Locator allParagraphs = page.locator("p[data-index]");
-                int count = allParagraphs.count();
+                // БЕЗОПАСНЫЙ СБОС ИНДЕКСОВ: вытаскиваем только текстовые значения data-index,
+                // которые есть в DOM прямо сейчас
+                @SuppressWarnings("unchecked")
+                List<String> availableIndices = (List<String>) page.evalOnSelectorAll(
+                        "p[data-index]",
+                        "elements => elements.map(el => el.getAttribute('data-index'))");
+
                 boolean foundNewContent = false;
 
-                for (int i = 0; i < count; i++) {
-                    Locator p = allParagraphs.nth(i);
-                    String index = p.getAttribute("data-index");
-
-                    // Если индекс есть и мы этот абзац еще НЕ читали
+                for (String index : availableIndices) {
+                    // Если индекс валидный и мы его еще не читали
                     if (index != null && !readParagraphs.contains(index)) {
 
-                        // Плавно скроллим к нему
-                        p.evaluate("node => node.scrollIntoView({ behavior: 'smooth', block: 'center' })");
-                        page.waitForTimeout(100); // Микропауза для браузера
+                        // Создаем точечный локатор именно под этот уникальный ID абзаца
+                        Locator p = page.locator("p[data-index='" + index + "']").first();
 
-                        String text = p.innerText();
-                        int textLength = text.length();
+                        try {
+                            // Плавно скроллим к конкретному абзацу
+                            p.evaluate("node => node.scrollIntoView({ behavior: 'smooth', block: 'center' })");
+                            page.waitForTimeout(100); // Микропауза для стабилизации интерфейса
 
-                        // Логика чтения
-                        if (textLength > 5) {
-                            double charsPerSecond = 30.0 + (random.nextDouble() * 15.0);
-                            int readingTimeMs = (int) ((textLength / charsPerSecond) * 1000);
-                            int extraPause = random.nextInt(300, 1000);
+                            String text = p.innerText();
+                            int textLength = text.length();
 
-                            System.out.printf("Читаем абзац %s (%d симв.) -> %d мс\n", index, textLength,
-                                    readingTimeMs + extraPause);
-                            page.waitForTimeout(readingTimeMs + extraPause);
-                        } else {
-                            page.waitForTimeout(200);
+                            // Логика симуляции чтения
+                            if (textLength > 5) {
+                                double charsPerSecond = 30.0 + (random.nextDouble() * 15.0);
+                                int readingTimeMs = (int) ((textLength / charsPerSecond) * 1000);
+                                int extraPause = random.nextInt(300, 1000);
+
+                                System.out.printf("Читаем абзац %s (%d симв.) -> %d мс\n", index, textLength,
+                                        readingTimeMs + extraPause);
+                                page.waitForTimeout(readingTimeMs + extraPause);
+                            } else {
+                                page.waitForTimeout(200);
+                            }
+
+                            // Отмечаем как прочитанный
+                            readParagraphs.add(index);
+                            foundNewContent = true;
+                            emptyScrollCount = 0;
+
+                            // ВАЖНО: прерываем внутренний FOR и обновляем список доступных индексов,
+                            // так как из-за скролла DOM-дерево могло измениться
+                            break;
+
+                        } catch (Exception e) {
+                            // На случай, если элемент исчез из DOM прямо во время взаимодействия
+                            System.out.println("Абзац " + index + " временно недоступен, обновляем поиск...");
+                            break;
                         }
-
-                        // Записываем абзац в прочитанные
-                        readParagraphs.add(index);
-                        foundNewContent = true;
-                        emptyScrollCount = 0; // Сбрасываем счетчик пустого скролла
                     }
                 }
 
-                // Если за весь цикл мы не нашли новых абзацев — возможно, нужно проскроллить
-                // вниз вручную
+                // Если за весь проход по видимым элементам не нашлось новых
                 if (!foundNewContent) {
-                    // Крутим колесико мыши вниз на 800 пикселей
                     page.mouse().wheel(0, 800);
-                    page.waitForTimeout(1500); // Ждем, пока сайт подгрузит новые абзацы по сети
+                    page.waitForTimeout(1500); // Ждем подгрузку по сети
 
                     emptyScrollCount++;
                     System.out.println("Ждем подгрузки новых абзацев... Попытка " + emptyScrollCount);
 
-                    // Если мы несколько раз проскроллили, а текста всё нет — глава закончилась
                     if (emptyScrollCount >= maxEmptyScrolls) {
                         System.out.println("Абзацы закончились. Глава прочитана!");
-                        break; // Выходим из цикла чтения главы
+                        break;
                     }
                 }
             }
 
-            // --- БЛОК НАВИГАЦИИ (Твой код, он отличный) ---
+            // --- БЛОК НАВИГАЦИИ МЕЖДУ ГЛАВАМИ ---
             Locator navBlock = page.locator(".chapter-nav").last();
             navBlock.scrollIntoViewIfNeeded();
 

@@ -45,7 +45,7 @@ public class App2 {
     private static final String DB_PASSWORD = "sugoma";
 
     public static void main(String[] args) {
-        int targetId = 1;
+        int targetId = 2;
 
         try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD)) {
             System.out.println("Успешное подключение");
@@ -120,7 +120,7 @@ public class App2 {
                                         .setTimeout(10000));
 
                                 page.navigate(
-                                        "https://litmarket.ru/books/hamlo-s-moskovskoy-propiskoy");
+                                        "https://litmarket.ru/books/selskaya-celitelnica-ivi");
 
                                 page.locator(".like-button").first()
                                         .waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.ATTACHED));
@@ -149,7 +149,7 @@ public class App2 {
                                     System.out.println("Книга уже стоит");
                                 }
 
-                                humanClick(page, page.locator(".btn-reader"), mousePos);
+                                humanClick(page, page.locator(".btn-reader a"), mousePos);
 
                                 reader.simulateReading(page);
 
