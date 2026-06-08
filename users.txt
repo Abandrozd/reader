@@ -1,0 +1,101 @@
+ID;ФИО;Email;Телефон;Город;Профессия
+1 | Светлана Лебедев | svetlana_lebedev1.@hotmail.com | 8 (968) 097-56-41 | Уфа | Forward Executive
+2 | Лариса Воробьева | larisa_vorobeva2.@ya.ru | 8 (904) 599-35-92 | Краснодар | International Design Officer
+3 | Валерия Волков | valeriya_volkov3.@ya.ru | 8 (934) 436-92-39 | Барнаул | Education Agent
+4 | Галина Горбунов | galina_gorbunov4.@hotmail.com | 8 (935) 061-10-10 | Тюмень | Global Legal Supervisor
+5 | Елизавета Агафонова | elizaveta_agafonova5.@gmail.com | 8 (998) 438-22-16 | Омск | Global Accounting Director
+6 | Алёна Пестова | alena_pestova6.@ya.ru | 8 (962) 285-80-54 | Новокузнецк | Marketing Liaison
+7 | Олег Васильев | oleg_vasilev7.@yandex.ru | 8 (935) 076-53-88 | Пенза | Senior Construction Liaison
+8 | Никита Князев | nikita_knyazev8.@hotmail.com | 8 (949) 306-80-60 | Нижний Новгород | Farming Associate
+9 | София Горбунов | sofiya_gorbunov9.@yandex.ru | 8 (943) 455-02-99 | Саратов | Legacy Farming Facilitator
+10 | Григорий Николаев | grigorii_nikolaev10.@ya.ru | 8 (986) 193-89-01 | Владимир | Healthcare Agent
+11 | Алла Фокина | alla_fokina11.@yahoo.com | 8 (983) 611-35-59 | Махачкала | Global Technician
+12 | Оксана Муравьев | oksana_muravev12.@hotmail.com | 8 (934) 188-34-61 | Владивосток | Advertising Technician
+13 | Валерий Нестерова | valerii_nesterova13.@hotmail.com | 8 (912) 229-90-19 | Владивосток | Forward Facilitator
+14 | Лаврентий Орехов | lavrentii_orekhov14.@yahoo.com | 8 (969) 052-86-77 | Красноярск | Retail Architect
+15 | Алла Симонов | alla_simonov15.@yandex.ru | 8 (955) 340-12-04 | Липецк | Advertising Technician
+16 | Наталья Николаев | natalya_nikolaev16.@yandex.ru | 8 (908) 567-75-49 | Барнаул | Real-Estate Producer
+17 | Вера Воронова | vera_voronova17.@yandex.ru | 8 (970) 802-92-11 | Ижевск | Global Manager
+18 | Станислав Ершова | stanislav_ershova18.@yahoo.com | 8 (969) 233-70-33 | Самара | Global Government Facilitator
+19 | Виталий Рогов | vitalii_rogov19.@gmail.com | 8 (931) 914-63-45 | Самара | Lead Manufacturing Liaison
+20 | Александр Смирнов | aleksandr_smirnov20.@hotmail.com | 8 (945) 005-09-70 | Воронеж | Design Coordinator
+21 | Герман Романов | german_romanov21.@mail.ru | 8 (922) 568-34-92 | Уфа | Retail Producer
+22 | Марина Сидорова | marina_sidorova22.@yandex.ru | 8 (954) 239-94-68 | Челябинск | Central Mining Engineer
+23 | Клавдия Козлова | klavdiya_kozlova23.@yahoo.com | 8 (941) 167-57-80 | Самара | Future Manufacturing Strategist
+24 | Алексей Кондратьева | aleksei_kondrateva24.@yahoo.com | 8 (908) 101-23-36 | Киров | Advertising Agent
+25 | Денис Тетерин | denis_teterin25.@gmail.com | 8 (913) 019-49-92 | Рязань | Construction Director
+26 | Алла Кудрявцева | alla_kudryavtseva26.@mail.ru | 8 (920) 239-43-25 | Чебоксары | Consulting Orchestrator
+27 | Алексей Афанасьев | aleksei_afanasev27.@yahoo.com | 8 (990) 684-06-30 | Санкт-Петербург | Global Architect
+28 | Евгений Киселева | evgenii_kiseleva28.@gmail.com | 8 (998) 181-74-97 | Ярославль | Regional Consultant
+29 | Надежда Авдеев | nadezhda_avdeev29.@hotmail.com | 8 (968) 847-53-48 | Уфа | Government Technician
+30 | Любовь Лазарева | lyubov_lazareva30.@yandex.ru | 8 (971) 479-77-93 | Ставрополь | Real-Estate Manager
+31 | Дмитрий Соколов | dmitrii_sokolov31.@mail.ru | 8 (993) 138-08-39 | Ростов-на-Дону | Real-Estate Administrator
+32 | Герман Устинов | german_ustinov32.@yahoo.com | 8 (921) 649-29-35 | Магнитогорск | Administration Executive
+33 | Игорь Миронова | igor_mironova33.@hotmail.com | 8 (957) 949-13-71 | Пермь | District Banking Assistant
+34 | Герман Голубев | german_golubev34.@yandex.ru | 8 (968) 744-04-39 | Киров | Future Technology Manager
+35 | Сергей Фомина | sergei_fomina35.@mail.ru | 8 (932) 418-88-79 | Красноярск | Legacy Administration Administrator
+36 | Ульяна Морозова | ulyana_morozova36.@ya.ru | 8 (985) 425-55-56 | Киров | Chief Design Technician
+37 | Ксения Стрелков | kseniya_strelkov37.@yandex.ru | 8 (973) 457-13-13 | Барнаул | Central Consulting Supervisor
+38 | Тамара Якушева | tamara_yakusheva38.@yandex.ru | 8 (915) 698-83-45 | Тюмень | Technology Associate
+39 | Аркадий Михеева | arkadii_mikheeva39.@yandex.ru | 8 (976) 890-50-98 | Иркутск | Internal Designer
+40 | Даниил Родионова | daniil_rodionova40.@yandex.ru | 8 (930) 534-77-24 | Курск | Administration Assistant
+41 | Анфиса Цветкова | anfisa_tsvetkova41.@yahoo.com | 8 (918) 278-43-44 | Владивосток | National Advertising Facilitator
+42 | Валерий Морозов | valerii_morozov42.@yahoo.com | 8 (926) 882-07-32 | Нижний Новгород | Consulting Consultant
+43 | Николай Некрасов | nikolai_nekrasov43.@gmail.com | 8 (951) 544-74-95 | Барнаул | Principal Accounting Coordinator
+44 | Роман Одинцов | roman_odintsov44.@yahoo.com | 8 (958) 172-07-22 | Новосибирск | Real-Estate Representative
+45 | Геннадий Филатова | gennadii_filatova45.@yandex.ru | 8 (913) 832-60-13 | Краснодар | Community-Services Associate
+46 | Валерия Романова | valeriya_romanova46.@yandex.ru | 8 (910) 460-44-74 | Белгород | Forward Consulting Liaison
+47 | Ангелина Молчанова | angelina_molchanova47.@gmail.com | 8 (927) 641-40-12 | Сочи | Government Officer
+48 | Василий Евсеева | vasilii_evseeva48.@yahoo.com | 8 (998) 263-32-81 | Нижний Новгород | District Legal Liaison
+49 | Аркадий Евдокимов | arkadii_evdokimov49.@hotmail.com | 8 (917) 250-77-88 | Волгоград | Farming Coordinator
+50 | Варвара Якушева | varvara_yakusheva50.@yandex.ru | 8 (971) 638-95-23 | Ростов-на-Дону | Mining Supervisor
+51 | Виталий Миронов | vitalii_mironov51.@hotmail.com | 8 (992) 034-60-41 | Магнитогорск | Global Director
+52 | Дмитрий Лапина | dmitrii_lapina52.@gmail.com | 8 (923) 058-94-46 | Брянск | Government Strategist
+53 | Людмила Комаров | lyudmila_komarov53.@hotmail.com | 8 (932) 359-15-49 | Ростов-на-Дону | Corporate Advertising Orchestrator
+54 | Нина Пономарева | nina_ponomareva54.@yandex.ru | 8 (978) 698-64-28 | Москва | Forward Consulting Representative
+55 | Раиса Мартынова | raisa_martynova55.@hotmail.com | 8 (957) 000-26-62 | Тверь | Investor Producer
+56 | Макар Трофимов | makar_trofimov56.@ya.ru | 8 (979) 376-62-43 | Барнаул | Direct Construction Strategist
+57 | Валентин Зимина | valentin_zimina57.@gmail.com | 8 (985) 345-83-81 | Оренбург | IT Technician
+58 | Эдуард Потапова | eduard_potapova58.@yahoo.com | 8 (993) 619-54-31 | Иваново | Direct Consulting Manager
+59 | Анжела Иванова | anzhela_ivanova59.@yandex.ru | 8 (908) 864-94-48 | Махачкала | Principal Advertising Engineer
+60 | Анатолий Лапин | anatolii_lapin60.@ya.ru | 8 (989) 511-62-49 | Владивосток | Principal Architect
+61 | Вера Коновалова | vera_konovalova61.@hotmail.com | 8 (944) 222-51-90 | Новокузнецк | Legal Architect
+62 | Анастасия Григорьев | anastasiya_grigorev62.@hotmail.com | 8 (998) 141-67-05 | Барнаул | Principal Marketing Coordinator
+63 | Лука Фокин | luka_fokin63.@hotmail.com | 8 (965) 733-34-72 | Челябинск | Central Construction Designer
+64 | Роман Архипова | roman_arkhipova64.@ya.ru | 8 (994) 892-31-06 | Рязань | Mining Specialist
+65 | Ярослав Гущин | yaroslav_gushin65.@hotmail.com | 8 (915) 578-94-90 | Чебоксары | Advertising Agent
+66 | Алексей Александрова | aleksei_aleksandrova66.@ya.ru | 8 (924) 763-07-66 | Саратов | National Analyst
+67 | Наталья Кудрявцева | natalya_kudryavtseva67.@hotmail.com | 8 (925) 508-71-70 | Оренбург | Future Designer
+68 | Маргарита Лобанова | margarita_lobanova68.@ya.ru | 8 (958) 977-20-42 | Тула | Mining Executive
+69 | Варвара Родионов | varvara_rodionov69.@hotmail.com | 8 (908) 083-13-95 | Рязань | Future Liaison
+70 | Ирина Силин | irina_silin70.@hotmail.com | 8 (961) 968-01-90 | Владимир | Future Developer
+71 | Сергей Красильников | sergei_krasilnikov71.@yahoo.com | 8 (900) 833-55-51 | Владимир | Advertising Facilitator
+72 | Василиса Агафонов | vasilisa_agafonov72.@ya.ru | 8 (995) 060-47-45 | Самара | Regional Administration Producer
+73 | Тамара Одинцов | tamara_odintsov73.@gmail.com | 8 (997) 250-05-92 | Томск | Advertising Supervisor
+74 | Герман Рыбакова | german_rybakova74.@gmail.com | 8 (942) 406-15-81 | Санкт-Петербург | Legacy Hospitality Consultant
+75 | Кира Блинова | kira_blinova75.@mail.ru | 8 (935) 894-90-26 | Владивосток | Forward Architect
+76 | Алевтина Лихачев | alevtina_likhachev76.@hotmail.com | 8 (996) 575-44-62 | Магнитогорск | International Consulting Architect
+77 | Денис Петухов | denis_petukhov77.@mail.ru | 8 (911) 259-49-98 | Саратов | Direct Farming Producer
+78 | Аркадий Русакова | arkadii_rusakova78.@yandex.ru | 8 (959) 698-56-70 | Ижевск | Administration Developer
+79 | Юрий Баранова | yurii_baranova79.@yandex.ru | 8 (949) 889-33-27 | Курск | District Government Administrator
+80 | Макар Авдеев | makar_avdeev80.@yahoo.com | 8 (995) 906-57-94 | Ярославль | Future Developer
+81 | Дмитрий Константинова | dmitrii_konstantinova81.@gmail.com | 8 (999) 827-48-32 | Ставрополь | Future Technology Strategist
+82 | Ульяна Голубев | ulyana_golubev82.@gmail.com | 8 (978) 832-67-81 | Омск | Accounting Specialist
+83 | Людмила Королев | lyudmila_korolev83.@yahoo.com | 8 (939) 015-97-09 | Воронеж | Product Coordinator
+84 | Алексей Галкин | aleksei_galkin84.@mail.ru | 8 (917) 193-63-00 | Омск | District Farming Architect
+85 | Вероника Белоусов | veronika_belousov85.@gmail.com | 8 (905) 999-56-81 | Оренбург | Advertising Facilitator
+86 | Валерия Рожков | valeriya_rozhkov86.@yandex.ru | 8 (976) 030-00-07 | Владимир | National IT Representative
+87 | Раиса Якушев | raisa_yakushev87.@mail.ru | 8 (919) 997-27-72 | Пермь | Legacy Accounting Manager
+88 | Олег Фадеев | oleg_fadeev88.@yandex.ru | 8 (904) 131-47-50 | Тула | Central Marketing Analyst
+89 | Татьяна Дьячкова | tatyana_dyachkova89.@yahoo.com | 8 (937) 058-87-90 | Томск | International Consulting Liaison
+90 | Семён Ширяева | semen_shiryaeva90.@hotmail.com | 8 (922) 171-46-97 | Иваново | Internal Associate
+91 | Даниил Рогова | daniil_rogova91.@hotmail.com | 8 (975) 128-88-48 | Пермь | Legal Producer
+92 | Валерий Казакова | valerii_kazakova92.@ya.ru | 8 (996) 188-56-75 | Санкт-Петербург | Construction Liaison
+93 | Александра Филиппов | aleksandra_filippov93.@hotmail.com | 8 (948) 807-28-82 | Кемерово | Retail Producer
+94 | Антонина Цветкова | antonina_tsvetkova94.@mail.ru | 8 (952) 720-70-30 | Иркутск | Construction Officer
+95 | Юлия Костина | yuliya_kostina95.@hotmail.com | 8 (949) 049-84-86 | Чебоксары | Direct Administration Associate
+96 | Роман Федотова | roman_fedotova96.@yandex.ru | 8 (942) 124-32-62 | Магнитогорск | Human Legal Consultant
+97 | Таисия Мамонтова | taisiya_mamontova97.@hotmail.com | 8 (980) 250-96-66 | Ростов-на-Дону | Technology Manager
+98 | Маргарита Князева | margarita_knyazeva98.@yandex.ru | 8 (932) 650-73-27 | Новосибирск | Hospitality Assistant
+99 | Вадим Егоров | vadim_egorov99.@gmail.com | 8 (941) 237-29-39 | Иркутск | International Education Liaison
+100 | Лидия Белоусова | lidiya_belousova100.@mail.ru | 8 (954) 743-53-38 | Ставрополь | Manufacturing Manager
