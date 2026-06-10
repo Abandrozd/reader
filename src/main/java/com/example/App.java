@@ -12,9 +12,8 @@ import com.microsoft.playwright.options.Proxy;
 import com.microsoft.playwright.options.WaitForSelectorState;
 import com.microsoft.playwright.Mouse;
 
-import java.nio.file.Paths;
-
 import net.datafaker.Faker;
+
 import java.util.Locale;
 import java.util.Random;
 import java.util.regex.Matcher;
@@ -22,12 +21,15 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
 
 import java.io.FileWriter;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -45,185 +47,180 @@ public class App {
     private static final String DB_PASSWORD = "sugoma";
 
     public static void main(String[] args) {
-        try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD)) {
-            System.out.println("Успешное подключение к бд");
+        List<List<String>> proxies = List.of(
+            List.of("91.188.242.71:9779", "pYEZ3d", "9mZApC"),
+            List.of("91.188.243.95:9956", "pYEZ3d", "9mZApC"),
+            List.of("91.188.240.60:9805", "pYEZ3d", "9mZApC"),
+            List.of("91.188.243.165:9895", "pYEZ3d", "9mZApC"),
+            List.of("91.188.240.67:9110", "pYEZ3d", "9mZApC"),
+            List.of("91.188.241.35:9690", "pYEZ3d", "9mZApC"),
+            List.of("91.188.243.185:9884", "pYEZ3d", "9mZApC"),
+            List.of("91.188.240.40:9828", "pYEZ3d", "9mZApC"),
+            List.of("91.188.243.156:9080", "pYEZ3d", "9mZApC"),
+            List.of("91.188.241.58:9449", "pYEZ3d", "9mZApC")
+        );
+ 
 
-            String sql = "INSERT INTO accounts (id, email, password, user_agent, width, height) VALUES (?, ?, ?, ?, ?)";
+        try (Playwright playwright = Playwright.create()) {
 
-            try (PreparedStatement ps = connection.prepareStatement(sql)) {
-                try (Playwright playwright = Playwright.create()) {
-                    Proxy proxy = new Proxy("http://91.188.242.71:9779").setUsername("pYEZ3d").setPassword("9mZApC");
+            Proxy proxy = new Proxy("http://91.188.242.71:9779").setUsername("pYEZ3d").setPassword("9mZApC");
 
-                    Browser browser = playwright.chromium().launch(
-                            new BrowserType.LaunchOptions().setProxy(proxy).setHeadless(false).setArgs(java.util.Arrays
-                                    .asList("--disable-blink-features=AutomationControlled", "--disable-infobars")));
+            Browser browser = playwright.chromium().launch(
+                    new BrowserType.LaunchOptions().setProxy(proxy).setHeadless(false).setArgs(java.util.Arrays
+                            .asList("--disable-blink-features=AutomationControlled", "--disable-infobars")));
 
-                    Faker faker = new Faker(Locale.of("ru"));
-                    String randomDomain = faker.options().option("@mail.ru", "@yandex.ru", "@gmail.com", "@bk.ru",
-                            "@inbox.ru");
+            Faker faker = new Faker(Locale.of("ru"));
+            String randomDomain = faker.options().option("@mail.ru", "@yandex.ru", "@gmail.com", "@bk.ru",
+                    "@inbox.ru");
 
-                    Random random = new Random();
+            Random random = new Random();
 
-                    Map<String, String> browserProfile = getRealisticBrowserProfile();
-                    String randomUA = browserProfile.get("userAgent");
-                    System.out.println("Используем UA: " + randomUA);
+            Map<String, String> browserProfile = getRealisticBrowserProfile();
+            String randomUA = browserProfile.get("userAgent");
+            System.out.println("Используем UA: " + randomUA);
 
-                    int[] viewport = getRealisticViewport();
-                    int randomWidth = viewport[0];
-                    int randomHeight = viewport[1];
+            int[] viewport = getRealisticViewport();
+            int randomWidth = viewport[0];
+            int randomHeight = viewport[1];
 
-                    Map<String, String> extraHeaders = new HashMap<>();
-                    extraHeaders.put("Sec-CH-UA", browserProfile.get("secChUa"));
-                    extraHeaders.put("Sec-CH-UA-Mobile", "?0");
-                    extraHeaders.put("Sec-CH-UA-Platform", browserProfile.get("secChUaPlatform"));
+            Map<String, String> extraHeaders = new HashMap<>();
+            extraHeaders.put("Sec-CH-UA", browserProfile.get("secChUa"));
+            extraHeaders.put("Sec-CH-UA-Mobile", "?0");
+            extraHeaders.put("Sec-CH-UA-Platform", browserProfile.get("secChUaPlatform"));
 
-                    Browser.NewContextOptions options = new Browser.NewContextOptions()
-                            .setUserAgent(randomUA)
-                            .setViewportSize(randomWidth, randomHeight)
-                            .setExtraHTTPHeaders(extraHeaders); // <-- Добавляем заголовки
+            Browser.NewContextOptions options = new Browser.NewContextOptions()
+                    .setUserAgent(randomUA)
+                    .setViewportSize(randomWidth, randomHeight)
+                    .setExtraHTTPHeaders(extraHeaders); // <-- Добавляем заголовки
 
-                    BrowserContext context = browser.newContext(options);
+            BrowserContext context = browser.newContext(options);
 
-                    // Подменяем JS-окружение под наш сгенерированный профиль
-                    String initScript = String.format("""
-                                Object.defineProperty(navigator, 'userAgentData', {
-                                    get: () => ({
-                                        brands: [
-                                            {brand: 'Google Chrome', version: '%s'},
-                                            {brand: 'Chromium', version: '%s'},
-                                            {brand: 'Not.A/Brand', version: '24'}
-                                        ],
-                                        mobile: false,
-                                        platform: %s
-                                    })
-                                });
-                                Object.defineProperty(navigator, 'platform', { get: () => '%s' });
-                            """,
-                            browserProfile.get("version"),
-                            browserProfile.get("version"),
-                            browserProfile.get("secChUaPlatform"),
-                            browserProfile.get("jsPlatform"));
+            // Подменяем JS-окружение под наш сгенерированный профиль
+            String initScript = String.format("""
+                        Object.defineProperty(navigator, 'userAgentData', {
+                            get: () => ({
+                                brands: [
+                                    {brand: 'Google Chrome', version: '%s'},
+                                    {brand: 'Chromium', version: '%s'},
+                                    {brand: 'Not.A/Brand', version: '24'}
+                                ],
+                                mobile: false,
+                                platform: %s
+                            })
+                        });
+                        Object.defineProperty(navigator, 'platform', { get: () => '%s' });
+                    """,
+                    browserProfile.get("version"),
+                    browserProfile.get("version"),
+                    browserProfile.get("secChUaPlatform"),
+                    browserProfile.get("jsPlatform"));
 
-                    context.addInitScript(initScript);
+            context.addInitScript(initScript);
 
-                    Page page = context.newPage();
+            Page page = context.newPage();
 
-                    String fileName = "accounts.txt";
-                    Path filePath = Paths.get(fileName);
+            String fileName = "accounts.txt";
+            Path filePath = Paths.get(fileName);
 
-                    long currentLines = 1;
+            long currentLines = 1;
 
-                    try {
-                        if (Files.exists(filePath)) {
-                            try (Stream<String> lines = Files.lines(filePath)) {
+            try {
+                if (Files.exists(filePath)) {
+                    try (Stream<String> lines = Files.lines(filePath)) {
 
-                                currentLines = lines.count() + 1;
-                            }
-                        }
-                    } catch (IOException err) {
-                        System.out.println("Не удалось прочитать файл: " + err.getMessage());
+                        currentLines = lines.count() + 1;
                     }
+                }
+            } catch (IOException err) {
+                System.out.println("Не удалось прочитать файл: " + err.getMessage());
+            }
 
-                    String str = "";
+            String str = "";
 
-                    String firstName = faker.name().firstName();
-                    String lastName = faker.name().lastName();
+            String firstName = faker.name().firstName();
+            String lastName = faker.name().lastName();
 
-                    int randnum = faker.number().numberBetween(100, 10000);
+            int randnum = faker.number().numberBetween(100, 10000);
 
-                    String email = transliterate(firstName).toLowerCase() + transliterate(lastName).toLowerCase()
-                            + randnum
-                            + randomDomain;
+            String email = transliterate(firstName).toLowerCase() + transliterate(lastName).toLowerCase()
+                    + randnum
+                    + randomDomain;
 
-                    String password = faker.credentials().password(8, 14, true, true, true);
+            String password = faker.credentials().password(8, 14, true, true, true);
 
-                    // =================== //
+            // =================== //
 
-                    page.navigate("https://litmarket.ru/");
+            page.navigate("https://litmarket.ru/");
 
-                    double[] mousePos = { random.nextInt(randomWidth), random.nextInt(randomHeight) };
-                    page.mouse().move(mousePos[0], mousePos[1]);
+            double[] mousePos = { random.nextInt(randomWidth), random.nextInt(randomHeight) };
+            page.mouse().move(mousePos[0], mousePos[1]);
 
-                    // Locator button = page.locator("button[type='submit']");
-                    // BoundingBox box = button.boundingBox();
+            // Locator button = page.locator("button[type='submit']");
+            // BoundingBox box = button.boundingBox();
 
-                    // if (box != null) {
-                    // double targetX = box.x + (box.width / 2);
-                    // double targetY = box.y + (box.height / 2);
+            // if (box != null) {
+            // double targetX = box.x + (box.width / 2);
+            // double targetY = box.y + (box.height / 2);
 
-                    // page.mouse().move(targetX, targetY, new Mouse.MoveOptions().setSteps(16));
+            // page.mouse().move(targetX, targetY, new Mouse.MoveOptions().setSteps(16));
 
-                    // randomSleep(page, 300, 500);
-                    // page.mouse().down();
-                    // page.mouse().up();
-                    // }
+            // randomSleep(page, 300, 500);
+            // page.mouse().down();
+            // page.mouse().up();
+            // }
 
-                    humanClick(page, page.locator(".login-btn"), mousePos);
+            humanClick(page, page.locator(".login-btn"), mousePos);
 
-                    humanType(page, page.locator("input[name='email']"), email, mousePos);
-                    humanType(page, page.locator("input[name='password']"), password, mousePos);
-                    randomSleep(page, 200, 400);
+            humanType(page, page.locator("input[name='email']"), email, mousePos);
+            humanType(page, page.locator("input[name='password']"), password, mousePos);
+            randomSleep(page, 200, 400);
 
-                    humanClick(page, page.locator("input[value='Регистрация']"), mousePos);
+            humanClick(page, page.locator("input[value='Регистрация']"), mousePos);
 
-                    Locator eulaAgreeCheckbox = page.locator("input[name='eula_agree']");
-                    System.out.println(eulaAgreeCheckbox.count());
+            Locator eulaAgreeCheckbox = page.locator("input[name='eula_agree']");
+            System.out.println(eulaAgreeCheckbox.count());
 
-                    randomSleep(page, 90, 180);
-                    eulaAgreeCheckbox.evaluate("node => node.click()");
-                    System.out.println("hu");
+            randomSleep(page, 90, 180);
+            eulaAgreeCheckbox.evaluate("node => node.click()");
+            System.out.println("hu");
 
-                    Locator eula18Checkbox = page.locator("input[name='eula_18_years']");
-                    randomSleep(page, 90, 180);
-                    eula18Checkbox.evaluate("node => node.click()");
-                    System.out.println("hi");
+            Locator eula18Checkbox = page.locator("input[name='eula_18_years']");
+            randomSleep(page, 90, 180);
+            eula18Checkbox.evaluate("node => node.click()");
+            System.out.println("hi");
 
-                    humanClick(page, page.locator("button[type='submit']").last(), mousePos);
+            humanClick(page, page.locator("button[type='submit']").last(), mousePos);
 
-                    boolean hasError = false;
-                    try {
-                        page.getByText("уже существует").waitFor(new Locator.WaitForOptions().setTimeout(5000));
-                        hasError = true;
-                    } catch (PlaywrightException e) {
-                        hasError = false;
-                    }
+            boolean hasError = false;
+            try {
+                page.getByText("уже существует").waitFor(new Locator.WaitForOptions().setTimeout(5000));
+                hasError = true;
+            } catch (PlaywrightException e) {
+                hasError = false;
+            }
 
-                    if (hasError) {
-                        System.out.println("Почта уже существует");
-                    } else {
-                        System.out.println("Почта успешно создана");
+            if (hasError) {
+                System.out.println("Почта уже существует");
+            } else {
+                System.out.println("Почта успешно создана");
 
-                        try (FileWriter fw = new FileWriter(fileName, true);
-                                BufferedWriter writer = new BufferedWriter(fw)) {
+                try (FileWriter fw = new FileWriter(fileName, true);
+                        BufferedWriter writer = new BufferedWriter(fw)) {
 
-                            str = currentLines + " | " + email + " | " + password + " | " + randomUA + " | "
-                                    + randomWidth
-                                    + " | " + randomHeight;
+                    str = currentLines + " | " + email + " | " + password + " | " + randomUA + " | "
+                            + randomWidth
+                            + " | " + randomHeight;
 
-                            writer.write(str + "\n");
+                    writer.write(str + "\n");
 
-                        } catch (IOException err) {
-                            System.out.println("Ошибка: " + err.getMessage());
-                        }
-
-                        ps.setString(1, email);
-                        ps.setString(2, password);
-                        ps.setString(3, randomUA);
-                        ps.setInt(4, randomWidth);
-                        ps.setInt(5, randomHeight);
-
-                        ps.executeUpdate();
-                    }
-
-                    System.out.println("Успешное завершение теста");
-
-                    browser.close();
+                } catch (IOException err) {
+                    System.out.println("Ошибка: " + err.getMessage());
                 }
             }
 
-        } catch (SQLException e) {
-            System.out.println("Бд сломалось");
-            e.printStackTrace();
+            System.out.println("Успешное завершение теста");
+
+            browser.close();
         }
     }
 

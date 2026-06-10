@@ -1,5 +1,5 @@
-1 | albertsafonov8544@mail.ru | 9Z27Mu0& | Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7.2) Gecko/20040804 Netscape/7.2 (ax)
-2 | georgiiaksenov4355@bk.ru | 9Qic$*#bY3h | Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36 | 1837 | 1020
+1 | albertsafonov8544@mail.ru | 9Z27Mu0& | Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7.2) Gecko/20040804 Netscape/7.2 (ax) | 1336 | 768
+2 | georgiiaksenov4355@bk.ru | 9Qic$*#bY3h | Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36 | 1440 | 899
 3 | mikhailkolesnikova7009@inbox.ru | L^o4JRq21Q!c | Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.32.0 Safari/537.36 | 1366 | 768
 4 | anatoliibelousova5679@inbox.ru | G34GFBjjy8V^ | Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.49.0 Safari/537.36 | 1366 | 768
 5 | igorkopylova6171@yandex.ru | yealj4W!*Vb | Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.53.0 Safari/537.36 | 1440 | 900

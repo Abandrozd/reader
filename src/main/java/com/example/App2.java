@@ -5,173 +5,229 @@ import com.microsoft.playwright.BrowserType;
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Playwright;
-import com.microsoft.playwright.PlaywrightException;
 import com.microsoft.playwright.BrowserContext;
 import com.microsoft.playwright.options.BoundingBox;
 import com.microsoft.playwright.options.Proxy;
 import com.microsoft.playwright.options.WaitForSelectorState;
-import com.microsoft.playwright.Mouse;
 
-import java.nio.file.Paths;
-
-import net.datafaker.Faker;
-import java.util.Locale;
-import java.util.Random;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Stream;
-import java.util.HashMap;
-import java.util.Map;
-
-import java.io.FileWriter;
-import java.io.BufferedWriter;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.io.IOException;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
+import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Scanner;
 
 public class App2 {
 
-    private static final String DB_URL = "jdbc:postgresql://localhost:5432/playwright_db";
-    private static final String DB_USER = "postgres";
-    private static final String DB_PASSWORD = "sugoma";
-
     public static void main(String[] args) {
-        int targetId = 2;
+        Path accountsFile = Paths.get("accounts.txt");
 
-        try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD)) {
-            System.out.println("Успешное подключение");
+        List<List<String>> proxies = List.of(
+            List.of("91.188.242.71:9779", "pYEZ3d", "9mZApC"),
+            List.of("91.188.243.95:9956", "pYEZ3d", "9mZApC"),
+            List.of("91.188.240.60:9805", "pYEZ3d", "9mZApC"),
+            List.of("91.188.243.165:9895", "pYEZ3d", "9mZApC"),
+            List.of("91.188.240.67:9110", "pYEZ3d", "9mZApC"),
+            List.of("91.188.241.35:9690", "pYEZ3d", "9mZApC"),
+            List.of("91.188.243.185:9884", "pYEZ3d", "9mZApC"),
+            List.of("91.188.240.40:9828", "pYEZ3d", "9mZApC"),
+            List.of("91.188.243.156:9080", "pYEZ3d", "9mZApC"),
+            List.of("91.188.241.58:9449", "pYEZ3d", "9mZApC")
+        );
 
-            // Знаком вопроса '?' мы помечаем место, куда Java подставит ID
-            String sql = "SELECT id, email, password, user_agent, width, height FROM accounts WHERE id = ?";
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("ID аккаунтов на чтение: ");
+        String input = scanner.nextLine();
 
-            try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
 
-                // targetId вместо первого знака вопроса в запросе
-                preparedStatement.setInt(1, targetId);
+        List<Integer> targetIds = new ArrayList<>();
+        String[] inputParts = input.split("[,\\s]+");
+        for (String part : inputParts) {
+            String trim = part.trim();
+            if (!trim.isEmpty()) {
+                try {
+                    targetIds.add(Integer.parseInt(trim));
+                } catch (Exception e) {
+                    System.err.println(trim + " не является числом");
+                }
+            }
+        }
 
-                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+        if (targetIds.isEmpty()) {
+            System.out.println("Все ID неверны4");
+            return;
+        }
 
-                    // Используем IF вместо WHILE. Нам нужна только одна строка!
-                    if (resultSet.next()) {
+        if (!Files.exists(accountsFile)) {
+            System.err.println("Ошибка / accounts.txt не найден в корне проекта");
+            return;
+        }
 
-                        // Вытаскиваем данные этого конкретного аккаунта
-                        String email = resultSet.getString("email");
-                        String password = resultSet.getString("password");
-                        String randomUA = resultSet.getString("user_agent");
-                        int randomWidth = resultSet.getInt("width");
-                        int randomHeight = resultSet.getInt("height");
-
-                        System.out.println("\nID " + targetId + " (" + email + ")");
-
-                        // Инициализируем Playwright
-                        try (Playwright playwright = Playwright.create()) {
-                            Proxy proxy = new Proxy("http://91.188.241.58:9449").setUsername("pYEZ3d")
-                                    .setPassword("9mZApC");
-                            Browser browser = playwright.chromium().launch(
-                                    new BrowserType.LaunchOptions()
-                                            .setProxy(proxy)
-                                            .setHeadless(false)
-                                            .setArgs(java.util.Arrays.asList(
-                                                    "--disable-blink-features=AutomationControlled",
-                                                    "--disable-infobars")));
-
-                            Random random = new Random();
-                            Map<String, String> extraHeaders = new HashMap<>();
-                            extraHeaders.put("Sec-CH-UA-Mobile", "?0");
-                            extraHeaders.put("Sec-CH-UA-Platform", "\"Windows\"");
-
-                            Browser.NewContextOptions options = new Browser.NewContextOptions()
-                                    .setUserAgent(randomUA)
-                                    .setViewportSize(randomWidth, randomHeight)
-                                    .setExtraHTTPHeaders(extraHeaders);
-
-                            try (BrowserContext context = browser.newContext(options)) {
-                                Page page = context.newPage();
-
-                                Reader reader = new Reader();
-
-                                // сам сценарий Playwright
-                                page.navigate("https://litmarket.ru/");
-
-                                double[] mousePos = { random.nextInt(randomWidth), random.nextInt(randomHeight) };
-                                page.mouse().move(mousePos[0], mousePos[1]);
-
-                                humanClick(page, page.locator(".login-btn"), mousePos);
-                                humanType(page, page.locator("input[name='email']"), email, mousePos);
-                                humanType(page, page.locator("input[name='password']"), password, mousePos);
-                                randomSleep(page, 200, 400);
-
-                                humanClick(page, page.locator(".authLoginButton"), mousePos);
-
-                                Locator avatarBtn = page.locator("a[href='#userPages'] .user-avatar").first();
-
-                                // ожидание прогрузки аватарки
-                                avatarBtn.waitFor(new Locator.WaitForOptions()
-                                        .setState(WaitForSelectorState.VISIBLE)
-                                        .setTimeout(10000));
-
-                                page.navigate(
-                                        "https://litmarket.ru/books/selskaya-celitelnica-ivi");
-
-                                page.locator(".like-button").first()
-                                        .waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.ATTACHED));
-
-                                Locator likeBtn = page.locator(".like-button:visible").first();
-
-                                String isLiked = likeBtn.getAttribute("aria-pressed");
-                                System.out.println(isLiked);
-
-                                if (likeBtn.getAttribute("aria-label").equals("Поставить лайк")) {
-                                    humanClick(page, likeBtn, mousePos);
-                                    randomSleep(page, 300, 600);
-                                    humanClick(page, page.getByLabel("Закрыть окно"), mousePos);
-                                } else {
-                                    System.out.println("Лайк уже стоит");
-                                }
-
-                                Locator libraryBtn = page.getByLabel("Добавить книгу в библиотеку").first();
-
-                                if (libraryBtn.isVisible()) {
-                                    humanClick(page, libraryBtn, mousePos);
-                                    randomSleep(page, 300, 500);
-                                    humanClick(page, page.locator("button[data-shelf-name='Читаю']"), mousePos);
-                                    randomSleep(page, 300, 500);
-                                } else {
-                                    System.out.println("Книга уже стоит");
-                                }
-
-                                humanClick(page, page.locator(".btn-reader a"), mousePos);
-
-                                reader.simulateReading(page);
-
-                                randomSleep(page, 300, 600);
-                                // humanClick(page, avatarBtn, mousePos);
-
-                                System.out.println("Успешное завершение теста - " + email);
-                            }
-                            browser.close();
-                        }
-
-                    } else {
-                        System.out.println("Аккаунт с ID " + targetId + " не существует");
-                    }
+        List<String[]> validAccounts = new ArrayList();
+        try {
+            List<String> lines = Files.readAllLines(accountsFile);
+            for (String line : lines) {
+                if (line.trim().isEmpty()) continue;
+                String[] parts = line.split("\\s*\\|\\s*");
+                if (parts.length == 6) {
+                    validAccounts.add(parts);
+                } else {
+                    System.err.println("Пропущена строка " + line + " / формат неточен");
                 }
             }
 
-        } catch (SQLException e) {
-            System.err.println("БД вылетело");
+        } catch (IOException e) {
+            System.out.println("Ошибка при чтении файла accounts.txt");
             e.printStackTrace();
+            return;
         }
+
+        int threadCount = 3;
+        System.out.println("Запущено " + threadCount + " потоков");
+
+        ExecutorService executor = Executors.newFixedThreadPool(threadCount);
+        List<CompletableFuture<Void>> futures = new ArrayList<>();
+
+        for (int num = 0; num < threadCount; num++) {
+            final int taskId = num;
+
+            CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+                try {
+                    String[] accountData = validAccounts.get(taskId);
+                    String email = accountData[1];
+                    String password = accountData[2];
+                    String randomUA = accountData[3];
+                    int randomWidth = Integer.parseInt(accountData[4]);
+                    int randomHeight = Integer.parseInt(accountData[5]);
+
+                    System.out.println("\nПоток" + taskId + " начал работу с" + email);
+
+                    try (Playwright playwright = Playwright.create()) {
+                        String proxyIp = proxies.get(taskId).get(0);
+
+                        Proxy proxy = new Proxy("http://" + proxyIp)
+                                .setUsername(proxies.get(taskId).get(1))
+                                .setPassword(proxies.get(taskId).get(2));
+                                
+                        Browser browser = playwright.chromium().launch(
+                                new BrowserType.LaunchOptions()
+                                        .setProxy(proxy)
+                                        .setHeadless(false)
+                                        .setArgs(java.util.Arrays.asList(
+                                                "--disable-blink-features=AutomationControlled",
+                                                "--disable-infobars")));
+
+                        Random random = new Random();
+                        Map<String, String> extraHeaders = new HashMap<>();
+                        extraHeaders.put("Sec-CH-UA-Mobile", "?0");
+                        extraHeaders.put("Sec-CH-UA-Platform", "\"Windows\"");
+
+                        Browser.NewContextOptions options = new Browser.NewContextOptions()
+                                .setUserAgent(randomUA)
+                                .setViewportSize(randomWidth, randomHeight)
+                                .setExtraHTTPHeaders(extraHeaders);
+
+                        try (BrowserContext context = browser.newContext(options)) {
+                            Page page = context.newPage();
+
+                            // Предполагается, что класс Reader существует в вашем проекте
+                            Reader reader = new Reader();
+
+                            // Сам сценарий Playwright
+                            page.navigate("https://litmarket.ru/");
+
+                            double[] mousePos = { random.nextInt(randomWidth), random.nextInt(randomHeight) };
+                            page.mouse().move(mousePos[0], mousePos[1]);
+
+                            humanClick(page, page.locator(".login-btn"), mousePos);
+                            humanType(page, page.locator("input[name='email']"), email, mousePos);
+                            humanType(page, page.locator("input[name='password']"), password, mousePos);
+                            randomSleep(page, 200, 400);
+
+                            humanClick(page, page.locator(".authLoginButton"), mousePos);
+
+                            Locator avatarBtn = page.locator("a[href='#userPages'] .user-avatar").first();
+
+                            // ожидание прогрузки аватарки
+                            avatarBtn.waitFor(new Locator.WaitForOptions()
+                                    .setState(WaitForSelectorState.VISIBLE)
+                                    .setTimeout(10000));
+
+                            page.navigate("https://litmarket.ru/books/derevenskiy-starosti-ivi");
+
+                            page.locator(".like-button").first()
+                                    .waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.ATTACHED));
+
+                            Locator likeBtn = page.locator(".like-button:visible").first();
+
+                            String isLiked = likeBtn.getAttribute("aria-pressed");
+                            System.out.println(isLiked);
+
+                            if (likeBtn.getAttribute("aria-label").equals("Поставить лайк")) {
+                                humanClick(page, likeBtn, mousePos);
+                                randomSleep(page, 300, 600);
+                                humanClick(page, page.getByLabel("Закрыть окно"), mousePos);
+                            } else {
+                                System.out.println("Лайк уже стоит");
+                            }
+
+                            Locator libraryBtn = page.getByLabel("Добавить книгу в библиотеку").first();
+
+                            if (libraryBtn.isVisible()) {
+                                humanClick(page, libraryBtn, mousePos);
+                                randomSleep(page, 300, 500);
+                                humanClick(page, page.locator("button[data-shelf-name='Читаю']"), mousePos);
+                                randomSleep(page, 3400, 4600);
+                            } else {
+                                System.out.println("Книга уже стоит");
+                            }
+
+                            humanClick(page, page.locator(".btn-reader a"), mousePos);
+
+                            reader.simulateReading(page);
+
+                            randomSleep(page, 300, 600);
+
+                            System.out.println("Успешное завершение теста - " + email);
+
+                        }
+                        browser.close();
+                    }
+
+                } catch (Exception e) {
+                    System.err.println("Ошибка потока " + taskId);
+                    e.printStackTrace();
+                }
+                }, executor);
+
+                futures.add(future);
+
+                try {
+                    Random random = new Random();
+                    int time = random.nextInt(1000, 3000);
+                    
+                    Thread.sleep(time);
+                } catch (InterruptedException e) {
+                    System.out.println("Главный поток был прерван");
+                }
+            }
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+        executor.shutdown();
+        System.out.println("Скрипт закончился :D");
     }
+
+    // =====================================================================
+    // ВСЕ МЕТОДЫ НИЖЕ ОСТАЛИСЬ БЕЗ ИЗМЕНЕНИЙ
+    // =====================================================================
 
     public static String transliterate(String text) {
         String cyrillic = "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдеёжзийклмнопрстуфхцчшщъыьэюя";
@@ -187,10 +243,8 @@ public class App2 {
         for (char ch : text.toCharArray()) {
             int index = cyrillic.indexOf(ch);
             if (index >= 0) {
-                // Если буква русская — заменяем на латинскую из массива
                 sb.append(latin[index]);
             } else {
-                // Если это пробел, тире или английская буква — оставляем как есть
                 sb.append(ch);
             }
         }
@@ -210,24 +264,20 @@ public class App2 {
         int chromeVersion = random.nextInt(122, 126);
         profile.put("version", String.valueOf(chromeVersion));
 
-        // 2. Выбираем платформу и ОС
         int osChance = random.nextInt(100);
         String osString;
         String secChUaPlatform;
         String jsPlatform;
 
         if (osChance < 70) {
-            // Windows 10 и 11 (У них одинаковый маркер NT 10.0)
             osString = "Windows NT 10.0; Win64; x64";
             secChUaPlatform = "\"Windows\"";
             jsPlatform = "Win32";
         } else if (osChance < 90) {
-            // macOS (Apple намеренно заморозила версию на 10_15_7 для приватности)
             osString = "Macintosh; Intel Mac OS X 10_15_7";
             secChUaPlatform = "\"macOS\"";
             jsPlatform = "MacIntel";
         } else {
-            // Linux
             osString = "X11; Linux x86_64";
             secChUaPlatform = "\"Linux\"";
             jsPlatform = "Linux x86_64";
@@ -237,7 +287,6 @@ public class App2 {
                 "Mozilla/5.0 (%s) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/%d.0.0.0 Safari/537.36",
                 osString, chromeVersion);
 
-        // Client Hints
         String secChUa = String.format("\"Google Chrome\";v=\"%d\", \"Chromium\";v=\"%d\", \"Not.A/Brand\";v=\"24\"",
                 chromeVersion, chromeVersion);
 
@@ -253,7 +302,6 @@ public class App2 {
         Random random = new Random();
         int chance = random.nextInt(100);
 
-        // 50% - Full HD, 30% - 1366x768, 20% - остальные
         if (chance < 50) {
             return new int[] { 1920, 1080 };
         } else if (chance < 80) {
@@ -269,9 +317,6 @@ public class App2 {
 
         double distance = Math.hypot(targetX - startX, targetY - startY);
 
-        // ем дальше лететь, тем быстрее рука делает рывок.
-        // Берем по 1 шагу на каждые 15 пикселей, но не меньше 15 и не больше 45 шагов
-        // всего.
         int steps = (int) (distance / 15);
         if (steps < 15)
             steps = 15 + random.nextInt(5);
@@ -298,7 +343,6 @@ public class App2 {
 
             page.mouse().move(x, y);
 
-            // УСКОРЕННЫЕ ПАУЗЫ: 1-2 мс в полете, 3-5 мс на прицеливании
             try {
                 int delay = (t < 0.2 || t > 0.8) ? (3 + random.nextInt(3)) : (1 + random.nextInt(2));
                 Thread.sleep(delay);
@@ -309,9 +353,6 @@ public class App2 {
         page.mouse().move(targetX, targetY);
     }
 
-    /**
-     * Функция для человечного клика по любому элементу
-     */
     public static void humanClick(Page page, Locator locator, double[] currentMousePos) {
         Random random = new Random();
 
@@ -325,10 +366,8 @@ public class App2 {
             return;
         }
 
-        // Выводим в консоль размеры, чтобы понять, куда мы целимся
         System.out.println(String.format("Целимся в элемент: width=%.1f, height=%.1f", box.width, box.height));
 
-        // Случайное отклонение от центра элемента
         int offsetX = box.width > 20 ? random.nextInt(-(int) (box.width / 4), (int) (box.width / 4)) : 0;
         int offsetY = box.height > 20 ? random.nextInt(-(int) (box.height / 4), (int) (box.height / 4)) : 0;
 
@@ -346,37 +385,26 @@ public class App2 {
         page.mouse().up();
     }
 
-    /**
-     * Человечный ввод текста с плавающей скоростью и редкими опечатками
-     */
     public static void humanType(Page page, Locator locator, String text, double[] currentMousePos) {
         Random random = new Random();
 
-        // 1. Сначала по-человечески кликаем в поле ввода, чтобы навестись и поставить
-        // курсор
         humanClick(page, locator, currentMousePos);
         randomSleep(page, 130, 300);
 
-        // 2. Разбиваем текст на символы и вводим по одному
         for (int i = 0; i < text.length(); i++) {
             char c = text.charAt(i);
 
-            // Вводим правильный символ
             page.keyboard().type(String.valueOf(c));
 
-            // 3. Имитация ошибки (шанс 3% напечатать лишнюю букву, если это не конец
-            // текста)
             if (random.nextInt(100) < 3 && i < text.length() - 1) {
-                // Печатаем случайную английскую букву
                 char typo = (char) (random.nextInt(26) + 'a');
                 page.keyboard().type(String.valueOf(typo));
 
-                randomSleep(page, 200, 400); // Человек замечает ошибку (задержка реакции)
-                page.keyboard().press("Backspace"); // Стираем опечатку
-                randomSleep(page, 100, 200); // Пауза перед продолжением
+                randomSleep(page, 200, 400); 
+                page.keyboard().press("Backspace"); 
+                randomSleep(page, 100, 200); 
             }
 
-            // 4. Плавающая пауза между клавишами
             int delay;
             if (random.nextInt(100) < 80) {
                 delay = random.nextInt(50, 120);
@@ -391,5 +419,4 @@ public class App2 {
             }
         }
     }
-
 }

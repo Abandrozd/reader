@@ -16,7 +16,7 @@ public class Reader {
         while (hasNextChapter) {
             System.out.println("Начинаем читать главу " + chapterCount);
 
-            // 1. Ждем появления текста новой главы
+            // Ждем появления текста новой главы
             page.locator("p[data-index]").first().waitFor(new Locator.WaitForOptions().setTimeout(10000));
 
             // Хранилище для индексов абзацев, которые мы уже прочитали в этой главе
@@ -26,7 +26,7 @@ public class Reader {
             int maxEmptyScrolls = 3;
 
             while (true) {
-                // БЕЗОПАСНЫЙ СБОС ИНДЕКСОВ: вытаскиваем только текстовые значения data-index,
+                // 5вытаскиваем только текстовые значения data-index,
                 // которые есть в DOM прямо сейчас
                 @SuppressWarnings("unchecked")
                 List<String> availableIndices = (List<String>) page.evalOnSelectorAll(
@@ -110,7 +110,7 @@ public class Reader {
                 page.waitForLoadState();
                 chapterCount++;
             } else {
-                System.out.println("Кнопка 'Далее' не найдена. Похоже, книга закончилась!");
+                System.out.println("Кнопка 'Далее' не найдена. Книга закончилась");
                 hasNextChapter = false;
             }
         }
