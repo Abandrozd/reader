@@ -48,179 +48,221 @@ public class App {
 
     public static void main(String[] args) {
         List<List<String>> proxies = List.of(
-            List.of("91.188.242.71:9779", "pYEZ3d", "9mZApC"),
-            List.of("91.188.243.95:9956", "pYEZ3d", "9mZApC"),
-            List.of("91.188.240.60:9805", "pYEZ3d", "9mZApC"),
-            List.of("91.188.243.165:9895", "pYEZ3d", "9mZApC"),
-            List.of("91.188.240.67:9110", "pYEZ3d", "9mZApC"),
-            List.of("91.188.241.35:9690", "pYEZ3d", "9mZApC"),
-            List.of("91.188.243.185:9884", "pYEZ3d", "9mZApC"),
-            List.of("91.188.240.40:9828", "pYEZ3d", "9mZApC"),
-            List.of("91.188.243.156:9080", "pYEZ3d", "9mZApC"),
-            List.of("91.188.241.58:9449", "pYEZ3d", "9mZApC")
-        );
- 
+                // 1-10
+                List.of("91.188.242.71:9779", "pYEZ3d", "9mZApC"),
+                List.of("91.188.243.95:9956", "pYEZ3d", "9mZApC"),
+                List.of("91.188.240.60:9805", "pYEZ3d", "9mZApC"),
+                List.of("91.188.243.165:9895", "pYEZ3d", "9mZApC"),
+                List.of("91.188.240.67:9110", "pYEZ3d", "9mZApC"),
+                List.of("91.188.241.35:9690", "pYEZ3d", "9mZApC"),
+                List.of("91.188.243.185:9884", "pYEZ3d", "9mZApC"),
+                List.of("91.188.240.40:9828", "pYEZ3d", "9mZApC"),
+                List.of("91.188.243.156:9080", "pYEZ3d", "9mZApC"),
+                List.of("91.188.241.58:9449", "pYEZ3d", "9mZApC"),
+                // 11-20
+                List.of("193.31.103.209:9297", "SM48LE", "VRZbQz"),
+                List.of("193.31.100.90:9972", "SM48LE", "VRZbQz"),
+                List.of("193.31.102.76:9030", "SM48LE", "VRZbQz"),
+                List.of("193.31.100.69:9253", "SM48LE", "VRZbQz"),
+                List.of("193.31.102.117:9789", "SM48LE", "VRZbQz"),
+                List.of("193.31.102.185:9995", "SM48LE", "VRZbQz"),
+                List.of("193.31.101.114:9957", "SM48LE", "VRZbQz"),
+                List.of("193.31.102.164:9895", "SM48LE", "VRZbQz"),
+                List.of("193.31.103.198:9052", "SM48LE", "VRZbQz"),
+                List.of("193.31.103.204:9167", "SM48LE", "VRZbQz"),
+                // 21-30
+                List.of("193.31.101.172:9193", "SM48LE", "VRZbQz"),
+                List.of("193.31.103.111:9072", "SM48LE", "VRZbQz"),
+                List.of("193.31.100.52:9320", "SM48LE", "VRZbQz"),
+                List.of("193.31.103.64:9686", "SM48LE", "VRZbQz"),
+                List.of("193.31.100.50:9698", "SM48LE", "VRZbQz"),
+                List.of("193.31.100.225:9863", "SM48LE", "VRZbQz"),
+                List.of("193.31.103.100:9370", "SM48LE", "VRZbQz"),
+                List.of("193.31.100.231:9316", "SM48LE", "VRZbQz"),
+                List.of("193.31.103.50:9672", "SM48LE", "VRZbQz"),
+                List.of("193.31.101.97:9331", "SM48LE", "VRZbQz"),
+                // 31-40
+                List.of("176.124.45.152:9534", "SM48LE", "VRZbQz"),
+                List.of("188.119.124.49:9198", "SM48LE", "VRZbQz"),
+                List.of("188.119.127.148:9150", "SM48LE", "VRZbQz"),
+                List.of("188.119.124.71:9555", "SM48LE", "VRZbQz"),
+                List.of("188.119.124.120:9619", "SM48LE", "VRZbQz"),
+                List.of("188.119.125.62:9970", "SM48LE", "VRZbQz"),
+                List.of("188.119.127.208:9488", "SM48LE", "VRZbQz"),
+                List.of("194.226.235.50:9915", "SM48LE", "VRZbQz"),
+                List.of("194.226.234.244:9356", "SM48LE", "VRZbQz"),
+                List.of("194.226.233.79:9287", "SM48LE", "VRZbQz"));
 
         try (Playwright playwright = Playwright.create()) {
 
-            Proxy proxy = new Proxy("http://91.188.242.71:9779").setUsername("pYEZ3d").setPassword("9mZApC");
+            // Задаем границы цикла (индексы массива с 10 по 39)
+            // Индекс 10 — это 11-й элемент, индекс 39 — 40-й элемент
+            int startAccount = 32;
+            int endAccount = 36;
 
-            Browser browser = playwright.chromium().launch(
-                    new BrowserType.LaunchOptions().setProxy(proxy).setHeadless(false).setArgs(java.util.Arrays
-                            .asList("--disable-blink-features=AutomationControlled", "--disable-infobars")));
+            for (int num = startAccount; num <= endAccount; num++) {
+                int i = num - 1;
+                if (i >= proxies.size()) {
+                    System.out.println("Прокси под номером " + num + " нет в списке! Прерываем цикл.");
+                    break;
+                }
+                List<String> proxyData = proxies.get(i);
+                String proxyIp = proxyData.get(0);
+                String proxyUser = proxyData.get(1);
+                String proxyPass = proxyData.get(2);
 
-            Faker faker = new Faker(Locale.of("ru"));
-            String randomDomain = faker.options().option("@mail.ru", "@yandex.ru", "@gmail.com", "@bk.ru",
-                    "@inbox.ru");
+                System.out.println("\n==============================================");
+                System.out.println("Запуск аккаунта " + (i - startAccount + 1) + " | Прокси: " + proxyIp);
+                System.out.println("==============================================");
 
-            Random random = new Random();
+                // Заворачиваем итерацию в try-catch, чтобы при падении одной реги цикл не
+                // прервался
+                try {
+                    Proxy proxy = new Proxy("http://" + proxyIp)
+                            .setUsername(proxyUser)
+                            .setPassword(proxyPass);
 
-            Map<String, String> browserProfile = getRealisticBrowserProfile();
-            String randomUA = browserProfile.get("userAgent");
-            System.out.println("Используем UA: " + randomUA);
+                    Browser browser = playwright.chromium().launch(
+                            new BrowserType.LaunchOptions().setProxy(proxy).setHeadless(false).setArgs(java.util.Arrays
+                                    .asList("--disable-blink-features=AutomationControlled", "--disable-infobars")));
 
-            int[] viewport = getRealisticViewport();
-            int randomWidth = viewport[0];
-            int randomHeight = viewport[1];
+                    Faker faker = new Faker(Locale.of("ru"));
+                    String randomDomain = faker.options().option("@mail.ru", "@yandex.ru", "@gmail.com", "@bk.ru",
+                            "@inbox.ru");
 
-            Map<String, String> extraHeaders = new HashMap<>();
-            extraHeaders.put("Sec-CH-UA", browserProfile.get("secChUa"));
-            extraHeaders.put("Sec-CH-UA-Mobile", "?0");
-            extraHeaders.put("Sec-CH-UA-Platform", browserProfile.get("secChUaPlatform"));
+                    Random random = new Random();
 
-            Browser.NewContextOptions options = new Browser.NewContextOptions()
-                    .setUserAgent(randomUA)
-                    .setViewportSize(randomWidth, randomHeight)
-                    .setExtraHTTPHeaders(extraHeaders); // <-- Добавляем заголовки
+                    Map<String, String> browserProfile = getRealisticBrowserProfile();
+                    String randomUA = browserProfile.get("userAgent");
+                    System.out.println("Используем UA: " + randomUA);
 
-            BrowserContext context = browser.newContext(options);
+                    int[] viewport = getRealisticViewport();
+                    int randomWidth = viewport[0];
+                    int randomHeight = viewport[1];
 
-            // Подменяем JS-окружение под наш сгенерированный профиль
-            String initScript = String.format("""
-                        Object.defineProperty(navigator, 'userAgentData', {
-                            get: () => ({
-                                brands: [
-                                    {brand: 'Google Chrome', version: '%s'},
-                                    {brand: 'Chromium', version: '%s'},
-                                    {brand: 'Not.A/Brand', version: '24'}
-                                ],
-                                mobile: false,
-                                platform: %s
-                            })
-                        });
-                        Object.defineProperty(navigator, 'platform', { get: () => '%s' });
-                    """,
-                    browserProfile.get("version"),
-                    browserProfile.get("version"),
-                    browserProfile.get("secChUaPlatform"),
-                    browserProfile.get("jsPlatform"));
+                    Map<String, String> extraHeaders = new HashMap<>();
+                    extraHeaders.put("Sec-CH-UA", browserProfile.get("secChUa"));
+                    extraHeaders.put("Sec-CH-UA-Mobile", "?0");
+                    extraHeaders.put("Sec-CH-UA-Platform", browserProfile.get("secChUaPlatform"));
 
-            context.addInitScript(initScript);
+                    Browser.NewContextOptions options = new Browser.NewContextOptions()
+                            .setUserAgent(randomUA)
+                            .setViewportSize(randomWidth, randomHeight)
+                            .setExtraHTTPHeaders(extraHeaders);
 
-            Page page = context.newPage();
+                    BrowserContext context = browser.newContext(options);
 
-            String fileName = "accounts.txt";
-            Path filePath = Paths.get(fileName);
+                    String initScript = String.format("""
+                                Object.defineProperty(navigator, 'userAgentData', {
+                                    get: () => ({
+                                        brands: [
+                                            {brand: 'Google Chrome', version: '%s'},
+                                            {brand: 'Chromium', version: '%s'},
+                                            {brand: 'Not.A/Brand', version: '24'}
+                                        ],
+                                        mobile: false,
+                                        platform: %s
+                                    })
+                                });
+                                Object.defineProperty(navigator, 'platform', { get: () => '%s' });
+                            """,
+                            browserProfile.get("version"),
+                            browserProfile.get("version"),
+                            browserProfile.get("secChUaPlatform"),
+                            browserProfile.get("jsPlatform"));
 
-            long currentLines = 1;
+                    context.addInitScript(initScript);
 
-            try {
-                if (Files.exists(filePath)) {
-                    try (Stream<String> lines = Files.lines(filePath)) {
+                    Page page = context.newPage();
 
-                        currentLines = lines.count() + 1;
+                    String fileName = "accounts.txt";
+                    Path filePath = Paths.get(fileName);
+
+                    long currentLines = 1;
+
+                    try {
+                        if (Files.exists(filePath)) {
+                            try (Stream<String> lines = Files.lines(filePath)) {
+                                currentLines = lines.count() + 1;
+                            }
+                        }
+                    } catch (IOException err) {
+                        System.out.println("Не удалось прочитать файл: " + err.getMessage());
                     }
-                }
-            } catch (IOException err) {
-                System.out.println("Не удалось прочитать файл: " + err.getMessage());
-            }
 
-            String str = "";
+                    String str = "";
 
-            String firstName = faker.name().firstName();
-            String lastName = faker.name().lastName();
+                    String firstName = faker.name().firstName();
+                    String lastName = faker.name().lastName();
 
-            int randnum = faker.number().numberBetween(100, 10000);
+                    int randnum = faker.number().numberBetween(100, 10000);
 
-            String email = transliterate(firstName).toLowerCase() + transliterate(lastName).toLowerCase()
-                    + randnum
-                    + randomDomain;
+                    String email = transliterate(firstName).toLowerCase() + transliterate(lastName).toLowerCase()
+                            + randnum
+                            + randomDomain;
 
-            String password = faker.credentials().password(8, 14, true, true, true);
+                    String password = faker.credentials().password(8, 14, true, true, true);
 
-            // =================== //
+                    page.navigate("https://litmarket.ru/");
 
-            page.navigate("https://litmarket.ru/");
+                    double[] mousePos = { random.nextInt(randomWidth), random.nextInt(randomHeight) };
+                    page.mouse().move(mousePos[0], mousePos[1]);
 
-            double[] mousePos = { random.nextInt(randomWidth), random.nextInt(randomHeight) };
-            page.mouse().move(mousePos[0], mousePos[1]);
+                    humanClick(page, page.locator(".login-btn"), mousePos);
 
-            // Locator button = page.locator("button[type='submit']");
-            // BoundingBox box = button.boundingBox();
+                    humanType(page, page.locator("input[name='email']"), email, mousePos);
+                    humanType(page, page.locator("input[name='password']"), password, mousePos);
+                    randomSleep(page, 200, 400);
 
-            // if (box != null) {
-            // double targetX = box.x + (box.width / 2);
-            // double targetY = box.y + (box.height / 2);
+                    humanClick(page, page.locator("input[value='Регистрация']"), mousePos);
 
-            // page.mouse().move(targetX, targetY, new Mouse.MoveOptions().setSteps(16));
+                    Locator eulaAgreeCheckbox = page.locator("input[name='eula_agree']");
 
-            // randomSleep(page, 300, 500);
-            // page.mouse().down();
-            // page.mouse().up();
-            // }
+                    randomSleep(page, 90, 180);
+                    eulaAgreeCheckbox.evaluate("node => node.click()");
 
-            humanClick(page, page.locator(".login-btn"), mousePos);
+                    Locator eula18Checkbox = page.locator("input[name='eula_18_years']");
+                    randomSleep(page, 90, 180);
+                    eula18Checkbox.evaluate("node => node.click()");
 
-            humanType(page, page.locator("input[name='email']"), email, mousePos);
-            humanType(page, page.locator("input[name='password']"), password, mousePos);
-            randomSleep(page, 200, 400);
+                    humanClick(page, page.locator("button[type='submit']").last(), mousePos);
 
-            humanClick(page, page.locator("input[value='Регистрация']"), mousePos);
+                    boolean hasError = false;
+                    try {
+                        page.getByText("уже существует").waitFor(new Locator.WaitForOptions().setTimeout(5000));
+                        hasError = true;
+                    } catch (PlaywrightException e) {
+                        hasError = false;
+                    }
 
-            Locator eulaAgreeCheckbox = page.locator("input[name='eula_agree']");
-            System.out.println(eulaAgreeCheckbox.count());
+                    if (hasError) {
+                        System.out.println("Почта уже существует");
+                    } else {
+                        System.out.println("Почта успешно создана");
 
-            randomSleep(page, 90, 180);
-            eulaAgreeCheckbox.evaluate("node => node.click()");
-            System.out.println("hu");
+                        try (FileWriter fw = new FileWriter(fileName, true);
+                                BufferedWriter writer = new BufferedWriter(fw)) {
 
-            Locator eula18Checkbox = page.locator("input[name='eula_18_years']");
-            randomSleep(page, 90, 180);
-            eula18Checkbox.evaluate("node => node.click()");
-            System.out.println("hi");
+                            str = currentLines + " | " + email + " | " + password + " | " + randomUA + " | "
+                                    + randomWidth + " | " + randomHeight;
 
-            humanClick(page, page.locator("button[type='submit']").last(), mousePos);
+                            writer.write(str + "\n");
 
-            boolean hasError = false;
-            try {
-                page.getByText("уже существует").waitFor(new Locator.WaitForOptions().setTimeout(5000));
-                hasError = true;
-            } catch (PlaywrightException e) {
-                hasError = false;
-            }
+                        } catch (IOException err) {
+                            System.out.println("Ошибка записи файла: " + err.getMessage());
+                        }
+                    }
 
-            if (hasError) {
-                System.out.println("Почта уже существует");
-            } else {
-                System.out.println("Почта успешно создана");
+                    System.out.println("Успешное завершение теста для " + email);
 
-                try (FileWriter fw = new FileWriter(fileName, true);
-                        BufferedWriter writer = new BufferedWriter(fw)) {
+                    // Обязательно закрываем браузер после каждой итерации, чтобы не перегрузить ОЗУ
+                    browser.close();
 
-                    str = currentLines + " | " + email + " | " + password + " | " + randomUA + " | "
-                            + randomWidth
-                            + " | " + randomHeight;
-
-                    writer.write(str + "\n");
-
-                } catch (IOException err) {
-                    System.out.println("Ошибка: " + err.getMessage());
+                } catch (Exception e) {
+                    System.err.println("Ошибка при работе с прокси " + proxyIp + " : " + e.getMessage());
+                    e.printStackTrace();
                 }
             }
-
-            System.out.println("Успешное завершение теста");
-
-            browser.close();
         }
     }
 

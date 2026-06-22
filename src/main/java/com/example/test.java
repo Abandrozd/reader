@@ -26,29 +26,28 @@ import java.nio.file.Path;
 
 public class test {
     public static void main(String[] args) {
-        int threadCount = 10; // Сколько инстансов запускаем одновременно
-        
+        int threadCount = 3; // Сколько инстансов запускаем одновременно
+
         // Создаем пул потоков
         ExecutorService executor = Executors.newFixedThreadPool(threadCount);
         List<CompletableFuture<Void>> futures = new ArrayList<>();
 
         for (int i = 0; i < threadCount; i++) {
             final int taskId = i; // Сохраняем номер задачи для логов
-            
+
             // Запускаем асинхронную задачу в пуле потоков
             CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
                 try (Playwright playwright = Playwright.create()) {
-                    
-                    Proxy proxy = new Proxy("http://91.188.241.58:9449")
-                                .setUsername("pYEZ3d")
-                                .setPassword("9mZApC");
+
+                    Proxy proxy = new Proxy("http://188.119.124.49:9198")
+                            .setUsername("SM48LE")
+                            .setPassword("VRZbQz");
 
                     System.out.println("Поток " + taskId + " запускает браузер...");
                     Browser browser = playwright.chromium()
                             .launch(new BrowserType.LaunchOptions()
                                     .setHeadless(false)
-                                    .setProxy(proxy)
-                            );
+                                    .setProxy(proxy));
 
                     Page page = browser.newPage();
 
@@ -59,7 +58,7 @@ public class test {
                     Random random = new Random();
                     int randomTimeout = random.nextInt(1200, 2800);
                     System.out.println("Поток " + taskId + " спит " + randomTimeout + " мс");
-                    
+
                     // Имитируем ожидание
                     Thread.sleep(randomTimeout);
 
@@ -67,30 +66,32 @@ public class test {
                     System.err.println("Ошибка в потоке " + taskId + ": " + e.getMessage());
                 }
             }, executor);
-            
+
             futures.add(future);
         }
 
         // try (Playwright playwright = Playwright.create()) {
-        //         Proxy proxy = new Proxy("http://91.188.242.71:9779").setUsername("pYEZ3d").setPassword("9mZApC");
+        // Proxy proxy = new
+        // Proxy("http://91.188.242.71:9779").setUsername("pYEZ3d").setPassword("9mZApC");
 
-        //         Browser browser = playwright.chromium()
-        //                 .launch(new BrowserType.LaunchOptions().setProxy(proxy));
+        // Browser browser = playwright.chromium()
+        // .launch(new BrowserType.LaunchOptions().setProxy(proxy));
 
-        //         Page page = browser.newPage();
+        // Page page = browser.newPage();
 
-        //         page.navigate("https://api.ipify.org", new Page.NavigateOptions().setTimeout(10000));
-        //         String ip = page.locator("body").innerText();
-        //         System.out.println("IP: " + ip);
+        // page.navigate("https://api.ipify.org", new
+        // Page.NavigateOptions().setTimeout(10000));
+        // String ip = page.locator("body").innerText();
+        // System.out.println("IP: " + ip);
 
-        //         Random random = new Random();
-        //         int randomTimeout = random.nextInt(100, 200);
-        //         System.out.println(randomTimeout);
-        //     }
+        // Random random = new Random();
+        // int randomTimeout = random.nextInt(100, 200);
+        // System.out.println(randomTimeout);
+        // }
 
         // Блокируем основной поток, пока все 3 задачи не завершатся
         CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
-        
+
         // Закрываем пул потоков
         executor.shutdown();
         System.out.println("Все браузеры завершили работу!");

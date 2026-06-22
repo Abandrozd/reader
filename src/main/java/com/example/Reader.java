@@ -17,7 +17,7 @@ public class Reader {
             System.out.println("Начинаем читать главу " + chapterCount);
 
             // Ждем появления текста новой главы
-            page.locator("p[data-index]").first().waitFor(new Locator.WaitForOptions().setTimeout(10000));
+            page.locator("p[data-index]").first().waitFor(new Locator.WaitForOptions().setTimeout(25000));
 
             // Хранилище для индексов абзацев, которые мы уже прочитали в этой главе
             Set<String> readParagraphs = new HashSet<>();
@@ -26,7 +26,32 @@ public class Reader {
             int maxEmptyScrolls = 3;
 
             while (true) {
-                // 5вытаскиваем только текстовые значения data-index,
+                // ================================
+                // ОБРАБОТКА ПЛАШКИ БЕЗ ПРЕРЫВАНИЯ ЧТЕНИЯ
+                // ================================
+                Locator shelfButtons = page.locator("button.shelve-button:visible");
+                if (shelfButtons.count() > 0) {
+                    List<String> names = List.of("Читаю", "Прочитать", "Прочитано", "Избранное");
+                    String name = names.get(random.nextInt(names.size()));
+                    Locator targetShelf = page.locator("button.shelve-button:has-text('" + name + "'):visible").first();
+
+                    if (targetShelf.count() > 0) {
+                        System.out
+                                .println("Появилась плашка выбора полки! Выбираем: " + name + " и продолжаем чтение.");
+                        targetShelf.click();
+                        page.waitForTimeout(1000);
+                    }
+                } else {
+                    Locator closeModalBtn = page.locator(".lmSimpleModal__close:visible").first();
+                    if (closeModalBtn.count() > 0) {
+                        System.out.println("Появилась обычная модалка. Закрываем и продолжаем.");
+                        closeModalBtn.click();
+                        page.waitForTimeout(500);
+                    }
+                }
+                // ================================
+
+                // вытаскиваем только текстовые значения data-index,
                 // которые есть в DOM прямо сейчас
                 @SuppressWarnings("unchecked")
                 List<String> availableIndices = (List<String>) page.evalOnSelectorAll(
@@ -100,6 +125,15 @@ public class Reader {
             navBlock.scrollIntoViewIfNeeded();
 
             page.waitForTimeout(random.nextInt(1500, 3000));
+
+            // Повторная проверка
+            Locator closeModalBtn = page.locator(".lmSimpleModal__close:visible").first();
+            if (closeModalBtn.count() > 0) {
+                System.out.println("Появилась плашка в конце главы! Закрываем её и полностью завершаем чтение.");
+                closeModalBtn.click();
+                page.waitForTimeout(500);
+                return;
+            }
 
             Locator nextBtn = page.locator(".chapter-nav__right")
                     .filter(new Locator.FilterOptions().setHasText("Далее")).first();
