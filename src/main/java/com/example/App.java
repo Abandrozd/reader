@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Scanner; // Добавлен импорт Сканнера
 
 import java.io.FileWriter;
 import java.io.BufferedWriter;
@@ -47,72 +48,85 @@ public class App {
     private static final String DB_PASSWORD = "sugoma";
 
     public static void main(String[] args) {
-        List<List<String>> proxies = List.of(
-                // 1-10
-                List.of("91.188.242.71:9779", "pYEZ3d", "9mZApC"),
-                List.of("91.188.243.95:9956", "pYEZ3d", "9mZApC"),
-                List.of("91.188.240.60:9805", "pYEZ3d", "9mZApC"),
-                List.of("91.188.243.165:9895", "pYEZ3d", "9mZApC"),
-                List.of("91.188.240.67:9110", "pYEZ3d", "9mZApC"),
-                List.of("91.188.241.35:9690", "pYEZ3d", "9mZApC"),
-                List.of("91.188.243.185:9884", "pYEZ3d", "9mZApC"),
-                List.of("91.188.240.40:9828", "pYEZ3d", "9mZApC"),
-                List.of("91.188.243.156:9080", "pYEZ3d", "9mZApC"),
-                List.of("91.188.241.58:9449", "pYEZ3d", "9mZApC"),
-                // 11-20
-                List.of("193.31.103.209:9297", "SM48LE", "VRZbQz"),
-                List.of("193.31.100.90:9972", "SM48LE", "VRZbQz"),
-                List.of("193.31.102.76:9030", "SM48LE", "VRZbQz"),
-                List.of("193.31.100.69:9253", "SM48LE", "VRZbQz"),
-                List.of("193.31.102.117:9789", "SM48LE", "VRZbQz"),
-                List.of("193.31.102.185:9995", "SM48LE", "VRZbQz"),
-                List.of("193.31.101.114:9957", "SM48LE", "VRZbQz"),
-                List.of("193.31.102.164:9895", "SM48LE", "VRZbQz"),
-                List.of("193.31.103.198:9052", "SM48LE", "VRZbQz"),
-                List.of("193.31.103.204:9167", "SM48LE", "VRZbQz"),
-                // 21-30
-                List.of("193.31.101.172:9193", "SM48LE", "VRZbQz"),
-                List.of("193.31.103.111:9072", "SM48LE", "VRZbQz"),
-                List.of("193.31.100.52:9320", "SM48LE", "VRZbQz"),
-                List.of("193.31.103.64:9686", "SM48LE", "VRZbQz"),
-                List.of("193.31.100.50:9698", "SM48LE", "VRZbQz"),
-                List.of("193.31.100.225:9863", "SM48LE", "VRZbQz"),
-                List.of("193.31.103.100:9370", "SM48LE", "VRZbQz"),
-                List.of("193.31.100.231:9316", "SM48LE", "VRZbQz"),
-                List.of("193.31.103.50:9672", "SM48LE", "VRZbQz"),
-                List.of("193.31.101.97:9331", "SM48LE", "VRZbQz"),
-                // 31-40
-                List.of("176.124.45.152:9534", "SM48LE", "VRZbQz"),
-                List.of("188.119.124.49:9198", "SM48LE", "VRZbQz"),
-                List.of("188.119.127.148:9150", "SM48LE", "VRZbQz"),
-                List.of("188.119.124.71:9555", "SM48LE", "VRZbQz"),
-                List.of("188.119.124.120:9619", "SM48LE", "VRZbQz"),
-                List.of("188.119.125.62:9970", "SM48LE", "VRZbQz"),
-                List.of("188.119.127.208:9488", "SM48LE", "VRZbQz"),
-                List.of("194.226.235.50:9915", "SM48LE", "VRZbQz"),
-                List.of("194.226.234.244:9356", "SM48LE", "VRZbQz"),
-                List.of("194.226.233.79:9287", "SM48LE", "VRZbQz"));
+        Path proxiesFile = Paths.get("proxies.txt");
+        List<List<String>> proxies = new ArrayList<>();
+
+        // ==========================================
+        // ЧТЕНИЕ ПРОКСИ ИЗ ФАЙЛА
+        // ==========================================
+        if (!Files.exists(proxiesFile)) {
+            System.err.println("Ошибка / proxies.txt не найден в корне проекта");
+            return;
+        }
+
+        try {
+            List<String> proxyLines = Files.readAllLines(proxiesFile);
+            for (String line : proxyLines) {
+                if (line.trim().isEmpty())
+                    continue;
+
+                // Ожидаемый формат: ip:port:user:password
+                String[] parts = line.split(":");
+                if (parts.length == 4) {
+                    String ipPort = parts[0] + ":" + parts[1]; // Склеиваем IP и порт
+                    String user = parts[2];
+                    String password = parts[3];
+                    proxies.add(List.of(ipPort, user, password));
+                } else {
+                    System.err.println(
+                            "Пропущена строка прокси " + line + " / неверный формат (ожидается ip:port:user:password)");
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Ошибка при чтении файла proxies.txt");
+            e.printStackTrace();
+            return;
+        }
+
+        if (proxies.isEmpty()) {
+            System.out.println("Ошибка / Список прокси пуст или имеет неверный формат.");
+            return;
+        }
+
+        // ==========================================
+        // ВВОД ГРАНИЦ ИЗ КОНСОЛИ
+        // ==========================================
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("С какого аккаунта (строки прокси) начать регистрацию? (например, 1): ");
+        int startAccount = scanner.nextInt();
+
+        System.out.print("По какой аккаунт включительно регистрировать? (например, 10): ");
+        int endAccount = scanner.nextInt();
+
+        if (startAccount > endAccount) {
+            System.out.println("Ошибка: начальный номер больше конечного!");
+            return;
+        }
+        if (startAccount < 1) {
+            System.out.println("Ошибка: нумерация должна начинаться с 1 или больше.");
+            return;
+        }
+
+        System.out.println("Ожидайте, запускаем браузер...");
 
         try (Playwright playwright = Playwright.create()) {
 
-            // Задаем границы цикла (индексы массива с 10 по 39)
-            // Индекс 10 — это 11-й элемент, индекс 39 — 40-й элемент
-            int startAccount = 32;
-            int endAccount = 36;
-
             for (int num = startAccount; num <= endAccount; num++) {
-                int i = num - 1;
+                int i = num - 1; // Индекс в списке (на 1 меньше номера аккаунта)
+
+                // Проверяем, есть ли в файле proxies.txt достаточное количество строк
                 if (i >= proxies.size()) {
-                    System.out.println("Прокси под номером " + num + " нет в списке! Прерываем цикл.");
+                    System.out.println("Прокси на строке " + num + " нет в файле proxies.txt! Прерываем цикл.");
                     break;
                 }
+
                 List<String> proxyData = proxies.get(i);
                 String proxyIp = proxyData.get(0);
                 String proxyUser = proxyData.get(1);
                 String proxyPass = proxyData.get(2);
 
                 System.out.println("\n==============================================");
-                System.out.println("Запуск аккаунта " + (i - startAccount + 1) + " | Прокси: " + proxyIp);
+                System.out.println("Запуск аккаунта " + num + " | Прокси: " + proxyIp);
                 System.out.println("==============================================");
 
                 // Заворачиваем итерацию в try-catch, чтобы при падении одной реги цикл не
@@ -280,10 +294,8 @@ public class App {
         for (char ch : text.toCharArray()) {
             int index = cyrillic.indexOf(ch);
             if (index >= 0) {
-                // Если буква русская — заменяем на латинскую из массива
                 sb.append(latin[index]);
             } else {
-                // Если это пробел, тире или английская буква — оставляем как есть
                 sb.append(ch);
             }
         }
@@ -303,24 +315,20 @@ public class App {
         int chromeVersion = random.nextInt(122, 126);
         profile.put("version", String.valueOf(chromeVersion));
 
-        // 2. Выбираем платформу и ОС
         int osChance = random.nextInt(100);
         String osString;
         String secChUaPlatform;
         String jsPlatform;
 
         if (osChance < 70) {
-            // Windows 10 и 11 (У них одинаковый маркер NT 10.0)
             osString = "Windows NT 10.0; Win64; x64";
             secChUaPlatform = "\"Windows\"";
             jsPlatform = "Win32";
         } else if (osChance < 90) {
-            // macOS (Apple намеренно заморозила версию на 10_15_7 для приватности)
             osString = "Macintosh; Intel Mac OS X 10_15_7";
             secChUaPlatform = "\"macOS\"";
             jsPlatform = "MacIntel";
         } else {
-            // Linux
             osString = "X11; Linux x86_64";
             secChUaPlatform = "\"Linux\"";
             jsPlatform = "Linux x86_64";
@@ -330,7 +338,6 @@ public class App {
                 "Mozilla/5.0 (%s) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/%d.0.0.0 Safari/537.36",
                 osString, chromeVersion);
 
-        // Client Hints
         String secChUa = String.format("\"Google Chrome\";v=\"%d\", \"Chromium\";v=\"%d\", \"Not.A/Brand\";v=\"24\"",
                 chromeVersion, chromeVersion);
 
@@ -346,7 +353,6 @@ public class App {
         Random random = new Random();
         int chance = random.nextInt(100);
 
-        // 50% - Full HD, 30% - 1366x768, 20% - остальные
         if (chance < 50) {
             return new int[] { 1920, 1080 };
         } else if (chance < 80) {
@@ -359,12 +365,8 @@ public class App {
 
     public static void moveMouse(Page page, double startX, double startY, double targetX, double targetY) {
         Random random = new Random();
-
         double distance = Math.hypot(targetX - startX, targetY - startY);
 
-        // ем дальше лететь, тем быстрее рука делает рывок.
-        // Берем по 1 шагу на каждые 15 пикселей, но не меньше 15 и не больше 45 шагов
-        // всего.
         int steps = (int) (distance / 15);
         if (steps < 15)
             steps = 15 + random.nextInt(5);
@@ -391,7 +393,6 @@ public class App {
 
             page.mouse().move(x, y);
 
-            // УСКОРЕННЫЕ ПАУЗЫ: 1-2 мс в полете, 3-5 мс на прицеливании
             try {
                 int delay = (t < 0.2 || t > 0.8) ? (3 + random.nextInt(3)) : (1 + random.nextInt(2));
                 Thread.sleep(delay);
@@ -402,9 +403,6 @@ public class App {
         page.mouse().move(targetX, targetY);
     }
 
-    /**
-     * Функция для человечного клика по любому элементу
-     */
     public static void humanClick(Page page, Locator locator, double[] currentMousePos) {
         Random random = new Random();
 
@@ -418,10 +416,8 @@ public class App {
             return;
         }
 
-        // Выводим в консоль размеры, чтобы понять, куда мы целимся
         System.out.println(String.format("Целимся в элемент: width=%.1f, height=%.1f", box.width, box.height));
 
-        // Случайное отклонение от центра элемента
         int offsetX = box.width > 20 ? random.nextInt(-(int) (box.width / 4), (int) (box.width / 4)) : 0;
         int offsetY = box.height > 20 ? random.nextInt(-(int) (box.height / 4), (int) (box.height / 4)) : 0;
 
@@ -439,37 +435,25 @@ public class App {
         page.mouse().up();
     }
 
-    /**
-     * Человечный ввод текста с плавающей скоростью и редкими опечатками
-     */
     public static void humanType(Page page, Locator locator, String text, double[] currentMousePos) {
         Random random = new Random();
 
-        // 1. Сначала по-человечески кликаем в поле ввода, чтобы навестись и поставить
-        // курсор
         humanClick(page, locator, currentMousePos);
         randomSleep(page, 130, 300);
 
-        // 2. Разбиваем текст на символы и вводим по одному
         for (int i = 0; i < text.length(); i++) {
             char c = text.charAt(i);
-
-            // Вводим правильный символ
             page.keyboard().type(String.valueOf(c));
 
-            // 3. Имитация ошибки (шанс 3% напечатать лишнюю букву, если это не конец
-            // текста)
             if (random.nextInt(100) < 3 && i < text.length() - 1) {
-                // Печатаем случайную английскую букву
                 char typo = (char) (random.nextInt(26) + 'a');
                 page.keyboard().type(String.valueOf(typo));
 
-                randomSleep(page, 200, 400); // Человек замечает ошибку (задержка реакции)
-                page.keyboard().press("Backspace"); // Стираем опечатку
-                randomSleep(page, 100, 200); // Пауза перед продолжением
+                randomSleep(page, 200, 400);
+                page.keyboard().press("Backspace");
+                randomSleep(page, 100, 200);
             }
 
-            // 4. Плавающая пауза между клавишами
             int delay;
             if (random.nextInt(100) < 80) {
                 delay = random.nextInt(50, 120);

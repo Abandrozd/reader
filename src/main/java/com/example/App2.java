@@ -34,52 +34,45 @@ public class App2 {
 
     public static void main(String[] args) {
         Path accountsFile = Paths.get("accounts.txt");
+        Path proxiesFile = Paths.get("proxies.txt"); // Файл с прокси
 
-        List<List<String>> proxies = List.of(
-                // 1-10
-                List.of("91.188.242.71:9779", "pYEZ3d", "9mZApC"),
-                List.of("91.188.243.95:9956", "pYEZ3d", "9mZApC"),
-                List.of("91.188.240.60:9805", "pYEZ3d", "9mZApC"),
-                List.of("91.188.243.165:9895", "pYEZ3d", "9mZApC"),
-                List.of("91.188.240.67:9110", "pYEZ3d", "9mZApC"),
-                List.of("91.188.241.35:9690", "pYEZ3d", "9mZApC"),
-                List.of("91.188.243.185:9884", "pYEZ3d", "9mZApC"),
-                List.of("91.188.240.40:9828", "pYEZ3d", "9mZApC"),
-                List.of("91.188.243.156:9080", "pYEZ3d", "9mZApC"),
-                List.of("91.188.241.58:9449", "pYEZ3d", "9mZApC"),
-                // 11-20
-                List.of("193.31.103.209:9297", "SM48LE", "VRZbQz"),
-                List.of("193.31.100.90:9972", "SM48LE", "VRZbQz"),
-                List.of("193.31.102.76:9030", "SM48LE", "VRZbQz"),
-                List.of("193.31.100.69:9253", "SM48LE", "VRZbQz"),
-                List.of("193.31.102.117:9789", "SM48LE", "VRZbQz"),
-                List.of("193.31.102.185:9995", "SM48LE", "VRZbQz"),
-                List.of("193.31.101.114:9957", "SM48LE", "VRZbQz"),
-                List.of("193.31.102.164:9895", "SM48LE", "VRZbQz"),
-                List.of("193.31.103.198:9052", "SM48LE", "VRZbQz"),
-                List.of("193.31.103.204:9167", "SM48LE", "VRZbQz"),
-                // 21-30
-                List.of("193.31.101.172:9193", "SM48LE", "VRZbQz"),
-                List.of("193.31.103.111:9072", "SM48LE", "VRZbQz"),
-                List.of("193.31.100.52:9320", "SM48LE", "VRZbQz"),
-                List.of("193.31.103.64:9686", "SM48LE", "VRZbQz"),
-                List.of("193.31.100.50:9698", "SM48LE", "VRZbQz"),
-                List.of("193.31.100.225:9863", "SM48LE", "VRZbQz"),
-                List.of("193.31.103.100:9370", "SM48LE", "VRZbQz"),
-                List.of("193.31.100.231:9316", "SM48LE", "VRZbQz"),
-                List.of("193.31.103.50:9672", "SM48LE", "VRZbQz"),
-                List.of("193.31.101.97:9331", "SM48LE", "VRZbQz"),
-                // 31-40
-                List.of("176.124.45.152:9534", "SM48LE", "VRZbQz"),
-                List.of("188.119.124.49:9198", "SM48LE", "VRZbQz"),
-                List.of("188.119.127.148:9150", "SM48LE", "VRZbQz"),
-                List.of("188.119.124.71:9555", "SM48LE", "VRZbQz"),
-                List.of("188.119.124.120:9619", "SM48LE", "VRZbQz"),
-                List.of("188.119.125.62:9970", "SM48LE", "VRZbQz"),
-                List.of("188.119.127.208:9488", "SM48LE", "VRZbQz"),
-                List.of("194.226.235.50:9915", "SM48LE", "VRZbQz"),
-                List.of("194.226.234.244:9356", "SM48LE", "VRZbQz"),
-                List.of("194.226.233.79:9287", "SM48LE", "VRZbQz"));
+        // ==========================================
+        // ЧТЕНИЕ ПРОКСИ ИЗ ФАЙЛА
+        // ==========================================
+        List<List<String>> proxies = new ArrayList<>();
+        if (!Files.exists(proxiesFile)) {
+            System.err.println("Ошибка / proxies.txt не найден в корне проекта");
+            return;
+        }
+
+        try {
+            List<String> proxyLines = Files.readAllLines(proxiesFile);
+            for (String line : proxyLines) {
+                if (line.trim().isEmpty())
+                    continue;
+
+                // Ожидаемый формат: ip:port:user:password
+                String[] parts = line.split(":");
+                if (parts.length == 4) {
+                    String ipPort = parts[0] + ":" + parts[1]; // Склеиваем IP и порт
+                    String user = parts[2];
+                    String password = parts[3];
+                    proxies.add(List.of(ipPort, user, password));
+                } else {
+                    System.err.println(
+                            "Пропущена строка прокси " + line + " / неверный формат (ожидается ip:port:user:password)");
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Ошибка при чтении файла proxies.txt");
+            e.printStackTrace();
+            return;
+        }
+
+        if (proxies.isEmpty()) {
+            System.out.println("Ошибка / Список прокси пуст или имеет неверный формат.");
+            return;
+        }
 
         Scanner scanner = new Scanner(System.in);
         System.out.print("ID аккаунтов на чтение: ");
@@ -99,7 +92,7 @@ public class App2 {
         }
 
         if (targetIds.isEmpty()) {
-            System.out.println("Все ID неверны4");
+            System.out.println("Все ID неверны");
             return;
         }
 
@@ -108,7 +101,7 @@ public class App2 {
             return;
         }
 
-        List<String[]> validAccounts = new ArrayList();
+        List<String[]> validAccounts = new ArrayList<>();
         try {
             List<String> lines = Files.readAllLines(accountsFile);
             for (String line : lines) {
@@ -169,7 +162,7 @@ public class App2 {
                     int randomWidth = Integer.parseInt(accountData[4]);
                     int randomHeight = Integer.parseInt(accountData[5]);
 
-                    System.out.println("\nПоток" + taskId + " начал работу с " + email);
+                    System.out.println("\nПоток " + taskId + " начал работу с " + email);
 
                     try (Playwright playwright = Playwright.create()) {
                         List<String> proxyData = proxies.get(originalIndex % proxies.size());
@@ -219,33 +212,19 @@ public class App2 {
                             humanClick(page, page.locator(".authLoginButton"), mousePos);
 
                             try {
-                                // Ждем аватарку 10 секунд (или увеличьте до 15000, чтобы дать сайту больше
-                                // времени)
                                 page.locator("a[href='#userPages'] .user-avatar").first()
                                         .waitFor(new Locator.WaitForOptions().setTimeout(10000));
                                 System.out.println("Успешный вход: аватарка найдена.");
                             } catch (TimeoutError e) {
-                                System.out.println(
-                                        "ERROR / Аватарка не появилась");
-                                // Здесь можно прервать выполнение (return или throw), так как без логина дальше
-                                // идти нет смысла
+                                System.out.println("ERROR / Аватарка не появилась");
                                 throw e;
                             }
 
-                            page.navigate("https://litmarket.ru/books/mishka-v-podarok-dlya-byvshego");
+                            page.navigate(
+                                    "https://litmarket.ru/books/ty-otryoksya-ot-nas-drakon-komandor-iscelenie-dlya-tvoego-proklyatogo-syna");
 
                             page.locator(".like-button").first()
                                     .waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.ATTACHED));
-
-                            humanClick(page, page.locator(".btn-reader a"), mousePos);
-
-                            reader.simulateReading(page);
-
-                            humanClick(page, page.locator("a.book-title"), mousePos);
-
-                            randomSleep(page, 1300, 1600);
-
-                            page.waitForLoadState(LoadState.NETWORKIDLE);
 
                             page.locator(".like-button").first()
                                     .waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.ATTACHED));
@@ -268,7 +247,6 @@ public class App2 {
                                     humanClick(page, likeBtn, mousePos);
 
                                     try {
-                                        // Ждем до 5 секунд, пока атрибут aria-pressed не станет "true"
                                         assertThat(likeBtn).hasAttribute("aria-pressed", "true",
                                                 new LocatorAssertions.HasAttributeOptions().setTimeout(5000));
                                         System.out.println("Лайк успешно поставлен!");
@@ -281,7 +259,6 @@ public class App2 {
                                 System.out.println("ОШИБКА: Кнопка лайка вообще не найдена или невидима.");
                             }
 
-                            // Проверка и закрытие всплывающего окна (если оно появляется после лайка)
                             Locator closeBtn = page.locator("button[aria-label='Закрыть окно']:visible").first();
                             if (closeBtn.count() > 0) {
                                 System.out.println("Найдено окно, закрываем...");
@@ -293,15 +270,11 @@ public class App2 {
                             // ==========================================
                             System.out.println("--- Проверка библиотеки ---");
                             Locator libraryBtn = page.getByLabel("Добавить книгу в библиотеку").first();
-
                             Locator libraryContainer = page.locator(".library-button").first();
 
                             if (!libraryContainer.isVisible()) {
-                                // Если даже контейнера нет, значит мы вообще не на странице книги или жесткий
-                                // непрогруз
                                 System.out.println("ERROR / Блок библиотеки вообще не найден на странице!");
                             } else {
-                                // Проверяем конкретные состояния кнопок внутри контейнера
                                 Locator loginRequiredBtn = libraryContainer
                                         .locator("[aria-label='Добавить в библиотеку (требуется вход)']");
                                 Locator addBtn = libraryContainer.getByLabel("Добавить книгу в библиотеку");
@@ -339,15 +312,22 @@ public class App2 {
                                         }
                                     }
                                 } else {
-                                    // Если контейнер есть, входа не требует, и кнопки "Добавить" нет — 100% она уже
-                                    // добавлена
-                                    // Считываем текст, чтобы точно знать, на какой она сейчас полке
                                     String currentStatus = libraryContainer.textContent().trim();
                                     System.out.println(
                                             "ПРОПУСК: Книга УЖЕ находится в библиотеке. Текущий статус кнопки: ["
                                                     + currentStatus + "]");
                                 }
                             }
+
+                            humanClick(page, page.locator(".btn-reader a"), mousePos);
+
+                            reader.simulateReading(page);
+
+                            humanClick(page, page.locator("a.book-title"), mousePos);
+
+                            randomSleep(page, 1300, 1600);
+
+                            page.waitForLoadState(LoadState.NETWORKIDLE);
 
                             System.out.println("Успешное завершение теста - " + email);
 
@@ -366,7 +346,6 @@ public class App2 {
             try {
                 Random random = new Random();
                 int time = random.nextInt(1000, 3000);
-
                 Thread.sleep(time);
             } catch (InterruptedException e) {
                 System.out.println("Главный поток был прерван");
@@ -510,7 +489,6 @@ public class App2 {
 
         locator.evaluate("el => el.scrollIntoView({ behavior: 'smooth', block: 'center' })");
 
-        // locator.scrollIntoViewIfNeeded();
         randomSleep(page, 150, 300);
 
         BoundingBox box = locator.boundingBox();
