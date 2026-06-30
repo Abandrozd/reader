@@ -27,7 +27,21 @@ public class Reader {
 
             while (true) {
                 // ================================
-                // ОБРАБОТКА ПЛАШКИ БЕЗ ПРЕРЫВАНИЯ ЧТЕНИЯ
+                // 1. ПРОВЕРКА "КРИТИЧЕСКОЙ" ПЛАШКИ (Выход из чтения)
+                // ================================
+                // Проверяем, не появилась ли именно плашка подарка (giftSelectionModal)
+                Locator giftModalCloseBtn = page.locator(".giftSelectionModal .lmSimpleModal__close:visible").first();
+                if (giftModalCloseBtn.count() > 0) {
+                    System.out.println(
+                            "Появилась плашка giftSelectionModal! Закрываем её и ПОЛНОСТЬЮ выходим из чтения.");
+                    giftModalCloseBtn.click();
+                    page.waitForTimeout(500);
+                    return; // Команда return моментально завершает метод simulateReading. Чтение
+                            // прекращается.
+                }
+
+                // ================================
+                // 2. ОБРАБОТКА ПОЛОК И ОБЫЧНЫХ МОДАЛОК (Без прерывания)
                 // ================================
                 Locator shelfButtons = page.locator("button.shelve-button:visible");
                 if (shelfButtons.count() > 0) {
@@ -42,6 +56,7 @@ public class Reader {
                         page.waitForTimeout(1000);
                     }
                 } else {
+                    // Если это НЕ подарочная плашка и НЕ полка, закроем её как обычную
                     Locator closeModalBtn = page.locator(".lmSimpleModal__close:visible").first();
                     if (closeModalBtn.count() > 0) {
                         System.out.println("Появилась обычная модалка. Закрываем и продолжаем.");
@@ -64,18 +79,15 @@ public class Reader {
                     // Если индекс валидный и мы его еще не читали
                     if (index != null && !readParagraphs.contains(index)) {
 
-                        // Создаем точечный локатор именно под этот уникальный ID абзаца
                         Locator p = page.locator("p[data-index='" + index + "']").first();
 
                         try {
-                            // Плавно скроллим к конкретному абзацу
                             p.evaluate("node => node.scrollIntoView({ behavior: 'smooth', block: 'center' })");
-                            page.waitForTimeout(100); // Микропауза для стабилизации интерфейса
+                            page.waitForTimeout(100);
 
                             String text = p.innerText();
                             int textLength = text.length();
 
-                            // Логика симуляции чтения
                             if (textLength > 5) {
                                 double charsPerSecond = 30.0 + (random.nextDouble() * 15.0);
                                 int readingTimeMs = (int) ((textLength / charsPerSecond) * 1000);
@@ -88,27 +100,21 @@ public class Reader {
                                 page.waitForTimeout(200);
                             }
 
-                            // Отмечаем как прочитанный
                             readParagraphs.add(index);
                             foundNewContent = true;
                             emptyScrollCount = 0;
-
-                            // ВАЖНО: прерываем внутренний FOR и обновляем список доступных индексов,
-                            // так как из-за скролла DOM-дерево могло измениться
                             break;
 
                         } catch (Exception e) {
-                            // На случай, если элемент исчез из DOM прямо во время взаимодействия
                             System.out.println("Абзац " + index + " временно недоступен, обновляем поиск...");
                             break;
                         }
                     }
                 }
 
-                // Если за весь проход по видимым элементам не нашлось новых
                 if (!foundNewContent) {
                     page.mouse().wheel(0, 800);
-                    page.waitForTimeout(1500); // Ждем подгрузку по сети
+                    page.waitForTimeout(1500);
 
                     emptyScrollCount++;
                     System.out.println("Ждем подгрузки новых абзацев... Попытка " + emptyScrollCount);
@@ -125,15 +131,6 @@ public class Reader {
             navBlock.scrollIntoViewIfNeeded();
 
             page.waitForTimeout(random.nextInt(1500, 3000));
-
-            // Повторная проверка
-            Locator closeModalBtn = page.locator(".lmSimpleModal__close:visible").first();
-            if (closeModalBtn.count() > 0) {
-                System.out.println("Появилась плашка в конце главы! Закрываем её и полностью завершаем чтение.");
-                closeModalBtn.click();
-                page.waitForTimeout(500);
-                return;
-            }
 
             Locator nextBtn = page.locator(".chapter-nav__right")
                     .filter(new Locator.FilterOptions().setHasText("Далее")).first();

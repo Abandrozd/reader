@@ -221,10 +221,7 @@ public class App2 {
                             }
 
                             page.navigate(
-                                    "https://litmarket.ru/books/ty-otryoksya-ot-nas-drakon-komandor-iscelenie-dlya-tvoego-proklyatogo-syna");
-
-                            page.locator(".like-button").first()
-                                    .waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.ATTACHED));
+                                    "https://litmarket.ru/books/izgnannaya-luna-alfy-ochag-dlya-ego-poteryannyh-volchat");
 
                             page.locator(".like-button").first()
                                     .waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.ATTACHED));
